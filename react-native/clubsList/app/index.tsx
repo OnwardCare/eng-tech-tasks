@@ -1,26 +1,35 @@
-import { Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import eliteClubs from "@/requests/getClubsList";
-import { useState } from "react";
 
 export default function Index() {
   const [clubs, setClubs] = useState([]);
-  
-  eliteClubs("England", 100000000, 10).then(
-    (clubs) => {
-      setClubs(clubs);
-    }
-  );
+  const [filter, setFilter] = useState();
 
+  useEffect(() => {
+    
+
+    eliteClubs(filter, 100000000, 10).then(
+      (clubs) => {
+        console.log('clubs', clubs);
+        setClubs(clubs);
+      }
+    );
+  }, [filter]);
+
+  const onChange = (event) => {
+    const value = event.target.value;
+
+    setFilter(value);
+  }
+  
   return (
     <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={styles.wrapper}
     >
+      <TextInput onChange={onChange} value={filter} />
       {
-        clubs.map(
+        clubs?.map(
           (club) => {
             return <Text>{club}</Text>;
           }
@@ -30,3 +39,11 @@ export default function Index() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  }
+})

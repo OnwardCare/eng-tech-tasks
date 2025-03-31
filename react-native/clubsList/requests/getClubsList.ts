@@ -16,6 +16,8 @@ interface IGetFootballTeamsResponse {
 }
 
 const sortFootballTeams = (footballTeams: IFootballTeam[]): IFootballTeam[] => {
+
+  
   const sortedFootballTeams = footballTeams.sort((a, b) => {
       if (a.estimated_value_numeric !== b.estimated_value_numeric) {
           return b.estimated_value_numeric - a.estimated_value_numeric;
