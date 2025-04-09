@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="rspec" tests="5" skipped="0" failures="5" errors="0" time="0.022903" timestamp="2025-04-09T16:08:32-04:00" hostname="Vitaliis-MacBook-Pro.local">
+<properties>
+<property name="seed" value="41075"/>
+</properties>
+<testcase classname="spec.requests.traders_spec" name="Traders performs correctly in a successful flow" file="./spec/requests/traders_spec.rb" time="0.010271"><failure message="
+expected: 201
+     got: 200
+
+(compared using ==)
+" type="RSpec::Expectations::ExpectationNotMetError">Failure/Error: expect(response.status).to eq(201)
+
+  expected: 201
+       got: 200
+
+  (compared using ==)
+./spec/requests/traders_spec.rb:20:in `block (2 levels) in &lt;top (required)&gt;&apos;</failure></testcase>
+<testcase classname="spec.requests.traders_spec" name="Traders PUT /trading/traders when trader by given email does not exist returns 404" file="./spec/requests/traders_spec.rb" time="0.002864"><failure message="undefined method `name=&apos; for nil:NilClass" type="NoMethodError">Failure/Error: trader.name = params[:name]
+
+NoMethodError:
+  undefined method `name=&apos; for nil:NilClass
+./app/controllers/traders_controller.rb:23:in `update&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/etag.rb:27:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/conditional_get.rb:40:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/head.rb:12:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:40:in `call_app&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:25:in `block in call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:25:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/runtime.rb:22:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/sendfile.rb:110:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/engine.rb:530:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-test-2.1.0/lib/rack/test.rb:360:in `process_request&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-test-2.1.0/lib/rack/test.rb:153:in `request&apos;
+./spec/requests/traders_spec.rb:77:in `block (4 levels) in &lt;top (required)&gt;&apos;</failure></testcase>
+<testcase classname="spec.requests.traders_spec" name="Traders POST /trading/traders/register when user with same email exists returns status code 400" file="./spec/requests/traders_spec.rb" time="0.002420"><failure message="
+expected: 400
+     got: 200
+
+(compared using ==)
+" type="RSpec::Expectations::ExpectationNotMetError">Failure/Error: expect(response.status).to eq(400)
+
+  expected: 400
+       got: 200
+
+  (compared using ==)
+./spec/requests/traders_spec.rb:65:in `block (4 levels) in &lt;top (required)&gt;&apos;</failure></testcase>
+<testcase classname="spec.requests.traders_spec" name="Traders PUT /trading/traders/add when trader by given email does not exist returns 404" file="./spec/requests/traders_spec.rb" time="0.003439"><failure message="undefined method `balance&apos; for nil:NilClass" type="NoMethodError">Failure/Error: trader.balance += params[:amount].to_f
+
+NoMethodError:
+  undefined method `balance&apos; for nil:NilClass
+./app/controllers/traders_controller.rb:30:in `add&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/etag.rb:27:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/conditional_get.rb:40:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/head.rb:12:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:40:in `call_app&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:25:in `block in call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/rack/logger.rb:25:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/runtime.rb:22:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-2.2.7/lib/rack/sendfile.rb:110:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/railties-7.0.4.3/lib/rails/engine.rb:530:in `call&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-test-2.1.0/lib/rack/test.rb:360:in `process_request&apos;
+/Users/dev/.rvm/gems/ruby-3.2.2/gems/rack-test-2.1.0/lib/rack/test.rb:153:in `request&apos;
+./spec/requests/traders_spec.rb:90:in `block (4 levels) in &lt;top (required)&gt;&apos;</failure></testcase>
+<testcase classname="spec.requests.traders_spec" name="Traders GET /trading/traders?email= returns 404 if trader is not found" file="./spec/requests/traders_spec.rb" time="0.002956"><failure message="
+expected: 404
+     got: 200
+
+(compared using ==)
+" type="RSpec::Expectations::ExpectationNotMetError">Failure/Error: expect(response.status).to eq(404)
+
+  expected: 404
+       got: 200
+
+  (compared using ==)
+./spec/requests/traders_spec.rb:103:in `block (3 levels) in &lt;top (required)&gt;&apos;</failure></testcase>
+</testsuite>
