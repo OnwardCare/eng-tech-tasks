@@ -1,0 +1,32 @@
+require:
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  DisabledByDefault: true
+
+Style:
+  Enabled: true
+  Severity: refactor
+
+Layout:
+  Enabled: true
+  Severity: refactor
+
+Lint:
+  Enabled: true
+  Severity: error
+
+Metrics:
+  Enabled: false
+
+Naming:
+  Enabled: false
+
+Rails:
+  Enabled: false
+
+RSpec:
+  Enabled: false

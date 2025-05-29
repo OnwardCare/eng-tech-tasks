@@ -48,6 +48,9 @@ Rails.application.configure do
   # Allow the hackerrank ide generated urls
   # config.hosts << /[\w\-\.]+\.hackerrank\.com/
 
+  # Allow localhost for running in codespaces
+  config.hosts << 'localhost' << '127.0.0.1'
+
   # Allow it to be iframed inside hackerrank IDE. Comment it out if
   # it is not something you want.
   config.action_dispatch.default_headers = {

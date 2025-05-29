@@ -1,0 +1,48 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ruby
+{
+	"name": "Ruby",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "ghcr.io/rails/devcontainer/images/ruby:3.2.6",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/rails/devcontainer/features/sqlite3": {}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8000],
+	"appPort": ["8000:8000"],
+
+	"updateContentCommand": "./.devcontainer/update_content_command.sh",
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "exec ./.devcontainer/post_create_command.sh",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"castwide.solargraph",
+				"aki77.rails-db-schema",
+				"kaiwood.endwise",
+				"cweijan.vscode-database-client2",
+				"Tino.simple-rest-client"
+			],
+			"settings": {
+				"[ruby]": {
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "Shopify.ruby-lsp"
+				},
+				"rubyLsp.rubyVersionManager": {
+					"identifier": "rbenv",
+					"rbenvExecutablePath": "/usr/local/share/rbenv/bin/rbenv"
+				}
+			}
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "vscode",
+	"updateRemoteUserUID": true
+}
