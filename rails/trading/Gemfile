@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.2'
+ruby '3.2.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.0.0', '>= 7.0.0'
@@ -34,6 +34,12 @@ group :development do
   # You can uncomment the following 2 lines as per your preference.
   # gem 'spring'
   # gem 'spring-watcher-listen', '~> 2.0.0'
+
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'solargraph', require: false
+  gem 'solargraph-rails', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -42,4 +48,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem "rspec-rails", "~> 6.0", :groups => [:development, :test]
 
 gem "rspec_junit_formatter", "~> 0.4.1", :group => :test
-
