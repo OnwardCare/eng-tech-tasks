@@ -56,7 +56,7 @@ const ArtPreview = (props: PreviewProps) => {
                       </p>
                     )}
                     <p>
-                      <strong>Date:</strong> {props.data.datebegin}
+                      <strong>Date:</strong> {props.data.dated}
                     </p>
                     <p>
                       <strong>Accession Year: </strong>

@@ -9,7 +9,8 @@ export interface ArtResult {
     role: string;
     prefix: string;
   }[];
-  datebegin: string;
+  datebegin?: string;
+  dated?: string;
   url: string;
   images: {
     baseimageurl?: string;
@@ -19,4 +20,5 @@ export interface ArtResult {
   dimensions: string;
   classification: string;
   accessionyear: string;
+  bookmarked?: boolean;
 }
