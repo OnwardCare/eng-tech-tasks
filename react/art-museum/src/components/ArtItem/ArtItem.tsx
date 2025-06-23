@@ -31,6 +31,7 @@ const ArtItem = ({
     localStorage.setItem(key, JSON.stringify(bookmarks));
   };
 
+  // SVGs used are simple SVGs i found on the web.
   return (
     <>
       <div className="art-item">
