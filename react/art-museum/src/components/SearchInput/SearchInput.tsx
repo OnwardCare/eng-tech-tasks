@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import "./SearchInput.css";
 
 interface SearchInputProps {
@@ -15,12 +15,17 @@ export const SearchInput = ({
   placeholder,
   ...props
 }: SearchInputProps) => {
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(value || "");
+
+  // Update internal state when value prop changes
+  useEffect(() => {
+    setInputValue(value || "");
+  }, [value]);
 
   return (
     <div className={className}>
       <div className="">
-        <form action="" role="search" className="">
+        <div className="">
           <input
             value={inputValue}
             type="search"
@@ -36,7 +41,7 @@ export const SearchInput = ({
             spellCheck="false"
             autoCorrect="off"
           />
-        </form>
+        </div>
       </div>
     </div>
   );

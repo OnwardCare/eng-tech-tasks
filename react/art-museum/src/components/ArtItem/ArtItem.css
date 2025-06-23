@@ -1,0 +1,50 @@
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.art-item {
+  background: #fff;
+  border: 1px solid #eee;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+  text-align: left;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+.art-item .art-item-content {
+  padding: 1rem;
+}
+
+.art-item img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.art-item h2 {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.art-item p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.generic-button {
+  background-color: #0db0e2;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
