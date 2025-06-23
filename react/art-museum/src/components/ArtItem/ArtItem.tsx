@@ -5,9 +5,11 @@ import { SetStateAction, Dispatch } from "react";
 const ArtItem = ({
   result,
   setEnabled,
+  setPreviewData,
 }: {
   result: ArtResult;
   setEnabled: Dispatch<SetStateAction<boolean>>;
+  setPreviewData: Dispatch<SetStateAction<ArtResult | null>>;
 }) => {
   return (
     <>
@@ -27,7 +29,10 @@ const ArtItem = ({
         <button
           type="button"
           className="generic-button"
-          onClick={() => setEnabled(true)}
+          onClick={() => {
+            setEnabled(true);
+            setPreviewData(result);
+          }}
         >
           Preview
         </button>

@@ -12,6 +12,7 @@ function App() {
   const searchCriteria = ["keyword", "medium", "Century or Culture"];
   const [results, setResults] = useState([]);
   const [previewEnabled, setPreviewEnabled] = useState(false);
+  const [previewData, setPreviewData] = useState<ArtResult | null>(null);
 
   // Debounced API call function
   const debouncedSearch = useCallback(
@@ -60,11 +61,16 @@ function App() {
               key={result.id}
               result={result}
               setEnabled={setPreviewEnabled}
+              setPreviewData={setPreviewData}
             />
           ))}
         </div>
       </main>
-      <ArtPreview enabled={previewEnabled} setEnabled={setPreviewEnabled} />
+      <ArtPreview
+        enabled={previewEnabled}
+        setEnabled={setPreviewEnabled}
+        data={previewData}
+      />
     </div>
   );
 }

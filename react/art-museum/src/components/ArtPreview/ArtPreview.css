@@ -13,15 +13,46 @@
 .art-preview-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
   width: 50%;
   background-color: #fff;
+  text-align: left;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.art-preview-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .art-preview-header {
   display: flex;
   justify-content: flex-end;
   padding: 1rem;
+}
+
+.art-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.art-preview h2 {
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+
+.art-preview img {
+  width: 100%;
+  height: auto;
+}
+
+.art-preview p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
 }
 
 .close-button {
@@ -35,4 +66,15 @@
   line-height: 1;
   border-radius: 4px;
   transition: background-color 0.2s;
+}
+
+.generic-button {
+  background-color: #0db0e2;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
