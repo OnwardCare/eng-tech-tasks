@@ -26,5 +26,4 @@ const SearchHeader = ({
   );
 };
 
-SearchHeader.displayName = "SearchHeader";
 export default SearchHeader;
