@@ -1,0 +1,19 @@
+.search-container {
+  padding: 3rem;
+}
+
+.search-container input {
+  max-width: 18rem;
+  padding: 10px 14px;
+  padding-left: 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+  background-color: #f9f9f9;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' viewBox='0 0 24 24' width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 2a8 8 0 015.292 13.707l4 4a1 1 0 01-1.414 1.414l-4-4A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 20px;
+}
