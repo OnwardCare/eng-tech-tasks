@@ -3,7 +3,6 @@
 Create a React app that helps users explore and bookmark artworks from a real museum collection using the Harvard Art Museums API.
 
 # Inventory
-
 API: https://github.com/harvardartmuseums/api-docs
 API key: `2fb38059-3f24-4f47-a0e1-4f037c491b50`
 
@@ -36,7 +35,6 @@ API key: `2fb38059-3f24-4f47-a0e1-4f037c491b50`
 ## 4. Responsive design (mobile + desktop)
 
 # Nice to Have (fine if not achieved)
-
 - Autocomplete on search input
 - Infinite scroll or pagination
 - Filter by availability of images
