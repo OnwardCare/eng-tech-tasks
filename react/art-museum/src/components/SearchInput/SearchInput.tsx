@@ -25,23 +25,21 @@ export const SearchInput = ({
   return (
     <div className={className}>
       <div className="">
-        <div className="">
-          <input
-            value={inputValue}
-            type="search"
-            {...props}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              onChange(e);
-            }}
-            className=""
-            placeholder={placeholder}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            autoCorrect="off"
-          />
-        </div>
+        <input
+          value={inputValue}
+          type="search"
+          {...props}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            onChange(e);
+          }}
+          className=""
+          placeholder={placeholder}
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          autoCorrect="off"
+        />
       </div>
     </div>
   );
