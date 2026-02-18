@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# Welcome to Onward React-Native coding challenge
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -16,35 +16,31 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Coding challenge
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+You are tasked with building an ultimate solution that will provide comprehensive information about football teams and their ranking. 
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The result of your work would be an expo application that would implement the following responsibilities
 
-## Get a fresh project
+### Implement generic view with filtering
+- list all available football teams and provide basic information about them 
+- allow filtering by the following properties: 
+   - name
+   - min estimated value
+   - min league titles won
 
-When you're ready, run:
+The results in the list should always be ordered by team valuation
 
-```bash
-npm run reset-project
-```
+You can use https://jsonmock.hackerrank.com/api/football_teams API to fetch information about teams
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### [optional] Measure distance between device location and team stadium
 
-## Learn more
+Build a button for every item in the list clicking on which you would display distance to the respective team stadium
 
-To learn more about developing your project with Expo, look at the following resources:
+To get coordinates of the stadium, you can use nominatim API,
+for example: https://nominatim.openstreetmap.org/search?q=Elland+Road+Stadium&format=json
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
 
-Join our community of developers creating universal apps.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
