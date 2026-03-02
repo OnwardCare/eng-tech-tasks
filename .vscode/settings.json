@@ -12,6 +12,7 @@
       "args": ["-l"]
     }
   },
+  "rubyLsp.bundleGemfile": "rails/trading/Gemfile",
   "sqltools.useNodeRuntime": true,
   "sqltools.connections": [
     {
