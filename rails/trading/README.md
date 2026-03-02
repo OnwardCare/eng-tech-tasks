@@ -8,16 +8,16 @@
 
 **Environment**
 
-- Ruby version: 3.2.6
+- Ruby version: 3.4.7
 - Rails version: 7.0.0
-- Default Port: 8000
+- Default Port: 3000
 
 **Commands**
 
 - run:
 
 ```bash
-bin/bundle exec rails server --binding 0.0.0.0 --port 8000
+bin/bundle exec rails server --binding 0.0.0.0 --port 3000
 ```
 
 - install:
