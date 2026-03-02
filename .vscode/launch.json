@@ -8,6 +8,7 @@
       "script": "bin/rails",
       "args": ["server", "-p", "3000"],
       "cwd": "${workspaceFolder}/rails/trading",
+      "rdbgPath": "/usr/local/rvm/gems/default/bin/rdbg",
       "env": {
         "GEM_HOME": "/usr/local/rvm/gems/default",
         "GEM_PATH": "/usr/local/rvm/gems/default:/usr/local/rvm/gems/default@global"
