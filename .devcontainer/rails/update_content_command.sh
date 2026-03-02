@@ -6,4 +6,4 @@ rvm use 3.4.7 --default
 gem install bundler:2.4.12
 gem install debug
 
-bundle install
+cd rails/trading && bundle install

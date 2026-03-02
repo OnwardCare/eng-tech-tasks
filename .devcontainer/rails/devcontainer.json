@@ -40,7 +40,8 @@
 				},
 				"rubyLsp.rubyVersionManager": {
 					"identifier": "rvm"
-				}
+				},
+				"github.copilot-chat.welcomeMessage": "never"
 			}
 		}
 	},
