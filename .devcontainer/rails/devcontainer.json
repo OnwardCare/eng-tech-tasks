@@ -43,7 +43,8 @@
 				"rubyLsp.rubyVersionManager": {
 					"identifier": "rvm"
 				},
-				"github.copilot-chat.welcomeMessage": "never"
+				"github.copilot-chat.welcomeMessage": "never",
+				"git.autofetch": false
 			}
 		}
 	},
