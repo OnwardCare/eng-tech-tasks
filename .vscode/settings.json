@@ -9,5 +9,17 @@
       "path": "/bin/bash",
       "args": ["-l"]
     }
-  }
+  },
+  "sqltools.connections": [
+    {
+      "name": "Development",
+      "driver": "SQLite",
+      "database": "/workspaces/eng-tech-tasks/rails/trading/db/development.sqlite3"
+    },
+    {
+      "name": "Test",
+      "driver": "SQLite",
+      "database": "/workspaces/eng-tech-tasks/rails/trading/db/test.sqlite3"
+    }
+  ]
 }

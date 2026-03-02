@@ -30,7 +30,8 @@
 				"KoichiSasada.vscode-rdbg",
 				"aki77.rails-db-schema",
 				"kaiwood.endwise",
-				"cweijan.vscode-database-client2",
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-sqlite",
 				"Tino.simple-rest-client"
 			],
 			"settings": {
