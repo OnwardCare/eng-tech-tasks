@@ -34,10 +34,6 @@
 				"Tino.simple-rest-client"
 			],
 			"settings": {
-				"workbench.startupEditor": "none",
-				"workbench.panel.defaultLocation": "right",
-				"git.showPushSuccessNotification": false,
-				"git.autofetch": false,
 				"[ruby]": {
 					"editor.formatOnSave": true,
 					"editor.defaultFormatter": "Shopify.ruby-lsp"

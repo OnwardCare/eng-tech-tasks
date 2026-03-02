@@ -1,9 +1,6 @@
 {
-  "database-client.connections": [
-    {
-      "name": "Development",
-      "dbType": "SQLite",
-      "dbPath": "${workspaceFolder}/rails/trading/db/development.sqlite3"
-    }
-  ]
+  "workbench.startupEditor": "none",
+  "workbench.panel.defaultLocation": "right",
+  "git.showPushSuccessNotification": false,
+  "git.autofetch": false
 }
