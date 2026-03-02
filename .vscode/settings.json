@@ -10,6 +10,7 @@
       "args": ["-l"]
     }
   },
+  "sqltools.useNodeRuntime": true,
   "sqltools.connections": [
     {
       "name": "Development",

@@ -9,7 +9,8 @@
 		"ghcr.io/devcontainers/features/ruby:1": {
 			"version": "3.4.7"
 		},
-		"ghcr.io/rails/devcontainer/features/sqlite3": {}
+		"ghcr.io/rails/devcontainer/features/sqlite3": {},
+		"ghcr.io/devcontainers/features/node:1": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
