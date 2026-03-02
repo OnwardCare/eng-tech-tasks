@@ -35,6 +35,8 @@
 			],
 			"settings": {
 				"workbench.startupEditor": "none",
+				"git.showPushSuccessNotification": false,
+				"git.autofetch": false,
 				"[ruby]": {
 					"editor.formatOnSave": true,
 					"editor.defaultFormatter": "Shopify.ruby-lsp"
