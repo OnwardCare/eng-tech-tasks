@@ -7,7 +7,8 @@
       "request": "launch",
       "script": "bin/rails",
       "args": ["server", "-p", "3000"],
-      "cwd": "${workspaceFolder}/rails/trading"
+      "cwd": "${workspaceFolder}/rails/trading",
+      "useBundler": true
     }
   ]
 }
