@@ -10,7 +10,9 @@
       "cwd": "${workspaceFolder}/rails/trading",
       "useBundler": true,
       "env": {
-        "PATH": "/usr/local/rvm/gems/ruby-3.4.7/bin:/usr/local/rvm/gems/ruby-3.4.7@global/bin:/usr/local/rvm/bin:/usr/local/rvm/rubies/ruby-3.4.7/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        "PATH": "/usr/local/rvm/gems/ruby-3.4.7/bin:/usr/local/rvm/gems/ruby-3.4.7@global/bin:/usr/local/rvm/bin:/usr/local/rvm/rubies/ruby-3.4.7/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "GEM_HOME": "/usr/local/rvm/gems/ruby-3.4.7",
+        "GEM_PATH": "/usr/local/rvm/gems/ruby-3.4.7:/usr/local/rvm/rubies/ruby-3.4.7/lib/ruby/gems/3.4.0"
       }
     }
   ]
