@@ -12,3 +12,5 @@ cd rails/trading
 bundle exec rails db:create
 bundle exec rails db:migrate
 bundle exec rails db:seed
+
+npm install -g sqlite3
