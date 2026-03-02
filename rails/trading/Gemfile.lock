@@ -111,9 +111,10 @@ GEM
       bigdecimal (>= 3.1, < 5)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
-    listen (3.0.8)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
+    listen (3.10.0)
+      logger
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
     loofah (2.25.0)
       crass (~> 1.0.2)
@@ -279,7 +280,7 @@ DEPENDENCIES
   bigdecimal
   bootsnap (>= 1.4.2)
   debug
-  listen (>= 3.0.5, < 3.2)
+  listen (~> 3.5)
   mutex_m
   puma (~> 4.1)
   rails (~> 7.0.0, >= 7.0.0)
