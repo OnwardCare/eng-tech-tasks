@@ -8,7 +8,10 @@
       "script": "bin/rails",
       "args": ["server", "-p", "3000"],
       "cwd": "${workspaceFolder}/rails/trading",
-      "useBundler": true
+      "env": {
+        "GEM_HOME": "/usr/local/rvm/gems/default",
+        "GEM_PATH": "/usr/local/rvm/gems/default:/usr/local/rvm/gems/default@global"
+      }
     }
   ]
 }

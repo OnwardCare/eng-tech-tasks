@@ -2,5 +2,12 @@
   "workbench.startupEditor": "none",
   "workbench.panel.defaultLocation": "right",
   "git.showPushSuccessNotification": false,
-  "git.autofetch": false
+  "git.autofetch": false,
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "/bin/bash",
+      "args": ["-l"]
+    }
+  }
 }

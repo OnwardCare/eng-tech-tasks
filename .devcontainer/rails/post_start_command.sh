@@ -3,12 +3,16 @@
 source /usr/local/rvm/scripts/rvm
 rvm use 3.4.7
 
-# Write DB client config only if it doesn't exist yet.
-# postStartCommand runs after VS Code and extensions initialize, so the
-# DB client extension won't overwrite this file on subsequent starts.
-if [ ! -f "$HOME/.dbclient/storage/config.jsonc" ]; then
-  mkdir -p "$HOME/.dbclient/storage"
-  cat > "$HOME/.dbclient/storage/config.jsonc" << 'EOF'
+echo "post_start_command: running as $(whoami), HOME=$HOME"
+echo "post_start_command: storage dir contents before write:"
+ls -la "$HOME/.dbclient/storage/" 2>&1
+
+# Sleep to give the DB extension time to finish initializing its storage dir
+sleep 5
+
+mkdir -p "$HOME/.dbclient/storage"
+echo "post_start_command: writing DB client config..."
+cat > "$HOME/.dbclient/storage/config.jsonc" << 'EOF'
 {
   "database": {
     "1000000000000": {
@@ -76,4 +80,5 @@ if [ ! -f "$HOME/.dbclient/storage/config.jsonc" ]; then
   "$schema": "https://cdn.database-client.com/dbclient/schema.json"
 }
 EOF
-fi
+echo "post_start_command: done. Storage contents:"
+ls -la "$HOME/.dbclient/storage/"

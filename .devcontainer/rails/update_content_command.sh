@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source /usr/local/rvm/scripts/rvm
+rvm install 3.4.7 --binary
 rvm use 3.4.7 --default
 
 gem install debug
