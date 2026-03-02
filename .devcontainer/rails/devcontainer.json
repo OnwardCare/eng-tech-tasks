@@ -35,6 +35,7 @@
 			],
 			"settings": {
 				"workbench.startupEditor": "none",
+				"workbench.panel.defaultLocation": "right",
 				"git.showPushSuccessNotification": false,
 				"git.autofetch": false,
 				"[ruby]": {
