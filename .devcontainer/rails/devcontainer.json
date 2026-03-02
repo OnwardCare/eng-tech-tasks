@@ -34,6 +34,7 @@
 				"Tino.simple-rest-client"
 			],
 			"settings": {
+				"workbench.startupEditor": "none",
 				"[ruby]": {
 					"editor.formatOnSave": true,
 					"editor.defaultFormatter": "Shopify.ruby-lsp"

@@ -1,0 +1,9 @@
+{
+  "database-client.connections": [
+    {
+      "name": "Development",
+      "dbType": "SQLite",
+      "dbPath": "${workspaceFolder}/rails/trading/db/development.sqlite3"
+    }
+  ]
+}
