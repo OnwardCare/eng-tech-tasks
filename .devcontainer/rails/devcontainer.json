@@ -22,10 +22,6 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "exec ./.devcontainer/rails/post_create_command.sh",
 
-	// Runs after VS Code attaches and extensions initialize (every open).
-	// Used to write the DB client config after the extension has set up its storage.
-	"postAttachCommand": "exec ./.devcontainer/rails/post_start_command.sh",
-
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
