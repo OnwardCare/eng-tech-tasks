@@ -27,7 +27,7 @@
 		"vscode": {
 			"extensions": [
 				"Shopify.ruby-lsp",
-				"KoichiSasagawa.vscode-rdbg",
+				"KoichiSasada.vscode-rdbg",
 				"aki77.rails-db-schema",
 				"kaiwood.endwise",
 				"cweijan.vscode-database-client2",
