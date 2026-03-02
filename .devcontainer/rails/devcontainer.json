@@ -1,29 +1,33 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
-	"name": "Ruby",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/rails/devcontainer/images/ruby:3.2.6",
+	"name": "Rails",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
+		"ghcr.io/devcontainers/features/ruby:1": {
+			"version": "3.4.7"
+		},
 		"ghcr.io/rails/devcontainer/features/sqlite3": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8000],
-	"appPort": ["8000:8000"],
+	"forwardPorts": [3000],
+	"appPort": ["3000:3000"],
 
-	"updateContentCommand": "./.devcontainer/update_content_command.sh",
+	"updateContentCommand": "./.devcontainer/rails/update_content_command.sh",
+	"waitFor": "updateContentCommand",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "exec ./.devcontainer/post_create_command.sh",
+	"postCreateCommand": "exec ./.devcontainer/rails/post_create_command.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"castwide.solargraph",
+				"Shopify.ruby-lsp",
+				"KoichiSasagawa.vscode-rdbg",
 				"aki77.rails-db-schema",
 				"kaiwood.endwise",
 				"cweijan.vscode-database-client2",
@@ -35,8 +39,7 @@
 					"editor.defaultFormatter": "Shopify.ruby-lsp"
 				},
 				"rubyLsp.rubyVersionManager": {
-					"identifier": "rbenv",
-					"rbenvExecutablePath": "/usr/local/share/rbenv/bin/rbenv"
+					"identifier": "rvm"
 				}
 			}
 		}

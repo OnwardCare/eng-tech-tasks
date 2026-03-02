@@ -12,6 +12,6 @@ configuration:
     default_open_files:
       - Gemfile
     project_menu:
-      run: bin/bundle exec rails server --binding 0.0.0.0 --port 8000
+      run: bin/bundle exec rails server --binding 0.0.0.0 --port 3000
       install: bin/bundle install
       test: RAILS_ENV=test bin/rails db:migrate && RAILS_ENV=test bin/bundle exec rspec
