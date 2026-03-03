@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3000
+
+### Register a new trader
+POST {{baseUrl}}/trading/traders/register
+Content-Type: application/json
+
+{
+  "name": "Elizabeth Small",
+  "email": "elizabeth.small@buck.com",
+  "balance": 62.0
+}
+
+### Get all traders
+GET {{baseUrl}}/trading/traders/all
+
+### Find trader by email
+GET {{baseUrl}}/trading/traders?email=elizabeth.small@buck.com
+
+### Update trader name by email
+PUT {{baseUrl}}/trading/traders
+Content-Type: application/json
+
+{
+  "email": "elizabeth.small@buck.com",
+  "name": "Elizabeth Large"
+}
+
+### Add funds to trader account by email
+PUT {{baseUrl}}/trading/traders/add
+Content-Type: application/json
+
+{
+  "email": "elizabeth.small@buck.com",
+  "amount": 100.0
+}

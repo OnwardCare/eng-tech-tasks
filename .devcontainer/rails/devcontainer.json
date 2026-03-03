@@ -33,7 +33,7 @@
 				"kaiwood.endwise",
 				"mtxr.sqltools",
 				"mtxr.sqltools-driver-sqlite",
-				"Tino.simple-rest-client"
+				"humao.rest-client"
 			],
 			"settings": {
 				"[ruby]": {
