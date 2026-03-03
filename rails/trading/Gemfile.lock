@@ -83,6 +83,7 @@ GEM
     bootsnap (1.23.0)
       msgpack (~> 1.2)
     builder (3.3.0)
+    coderay (1.1.3)
     concurrent-ruby (1.3.6)
     crass (1.0.6)
     date (3.5.1)
@@ -95,8 +96,25 @@ GEM
     erubi (1.13.1)
     ffi (1.17.3)
     ffi (1.17.3-x86_64-linux-gnu)
+    formatador (1.2.3)
+      reline
     globalid (1.3.0)
       activesupport (>= 6.1)
+    guard (2.20.1)
+      formatador (>= 0.2.4)
+      listen (>= 2.7, < 4.0)
+      logger (~> 1.6)
+      lumberjack (>= 1.0.12, < 2.0)
+      nenv (~> 0.1)
+      notiffany (~> 0.0)
+      pry (>= 0.13.0)
+      shellany (~> 0.0)
+      thor (>= 0.18.1)
+    guard-compat (1.2.1)
+    guard-rspec (4.7.3)
+      guard (~> 2.1)
+      guard-compat (~> 1.1)
+      rspec (>= 2.99.0, < 4.0)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
@@ -119,6 +137,7 @@ GEM
     loofah (2.25.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    lumberjack (1.4.2)
     mail (2.9.0)
       logger
       mini_mime (>= 0.1.1)
@@ -136,6 +155,7 @@ GEM
       prism (~> 1.5)
     msgpack (1.8.0)
     mutex_m (0.3.0)
+    nenv (0.3.0)
     net-imap (0.6.3)
       date
       net-protocol
@@ -151,6 +171,9 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.1-x86_64-linux-gnu)
       racc (~> 1.4)
+    notiffany (0.1.3)
+      nenv (~> 0.1)
+      shellany (~> 0.0)
     parallel (1.27.0)
     parser (3.3.10.2)
       ast (~> 2.4.1)
@@ -159,6 +182,10 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.9.0)
+    pry (0.16.0)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+      reline (>= 0.6.0)
     psych (5.3.1)
       date
       stringio
@@ -212,6 +239,10 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    rspec (3.13.2)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
@@ -263,6 +294,7 @@ GEM
       ruby-lsp (~> 0.26.0)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    shellany (0.0.1)
     sqlite3 (1.7.3)
       mini_portile2 (~> 2.8.0)
     stringio (3.2.0)
@@ -289,6 +321,7 @@ DEPENDENCIES
   bigdecimal
   bootsnap (>= 1.4.2)
   debug
+  guard-rspec
   listen (~> 3.5)
   mutex_m
   puma (~> 4.1)
