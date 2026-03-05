@@ -3,7 +3,7 @@ class TradersController < ApplicationController
     trader = Trader.new(trader_params)
     
     if trader.save
-      render json: trader
+      render json: trader, status: 201
     else
       render status: 400
     end
@@ -15,21 +15,27 @@ class TradersController < ApplicationController
 
   def find
     trader = Trader.find_by(email: params[:email])
-    render json: trader
+    return render status: 404 unless trader
+
+    render json: trader, status: 200
   end
 
   def update
     trader = Trader.find_by(email: params[:email])
+    return render status: 404 unless trader
+
     trader.name = params[:name]
     trader.save
-    render json: trader
+    render json: trader, status: 200
   end
 
   def add
     trader = Trader.find_by(email: params[:email])
-    trader.balance += params[:amount].to_f
+    return render status: 404 unless trader
+
+    trader.balance = trader.balance.to_f + params[:amount].to_f
     trader.save
-    render json: trader
+    render json: trader, status: 200
   end
 
   private
