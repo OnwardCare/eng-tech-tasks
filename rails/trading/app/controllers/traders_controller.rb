@@ -1,15 +1,10 @@
 class TradersController < ApplicationController
   def register
-    trader = Trader.new(trader_params)
-    
-    begin
-      if trader.save
-        render json: trader, status: 201
-      else
-        render status: 400
-      end
-    rescue ActiveRecord::RecordNotUnique
-      render status: 400
+    result = Traders::RegisterService.call(**trader_params.to_h.symbolize_keys)
+    if result.success?
+      render json: result.data, status: 201
+    else
+      render_service_error(result)
     end
   end
 
@@ -18,37 +13,40 @@ class TradersController < ApplicationController
   end
 
   def find
-    trader = Trader.find_by(email: params[:email])
-    if trader
-      render json: trader
-    else
-      render status: 404
-    end
+    trader = Trader.find_by!(email: params[:email])
+    render json: trader
+  rescue ActiveRecord::RecordNotFound
+    render status: 404
   end
 
   def update
-    trader = Trader.find_by(email: params[:email])
-    if trader
-      trader.name = params[:name]
-      trader.save
-      render json: trader
+    result = Traders::UpdateService.call(email: params[:email], name: params[:name])
+    if result.success?
+      render json: result.data
     else
-      render status: 404
+      render_service_error(result)
     end
   end
 
   def add
-    trader = Trader.find_by(email: params[:email])
-    if trader
-      trader.balance += params[:amount].to_f
-      trader.save
-      render json: trader
+    result = Traders::AddBalanceService.call(email: params[:email], amount: params[:amount])
+    if result.success?
+      render json: result.data
     else
-      render status: 404
+      render_service_error(result)
     end
   end
 
   private
+
+  def render_service_error(result)
+    status = if result.error_type == :not_found
+               404
+             else
+               400
+             end
+    render status: status
+  end
 
   def trader_params
     params.permit(:name, :email, :balance)
