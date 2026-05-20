@@ -35,9 +35,13 @@ class TradersController < ApplicationController
 
   def add
     trader = Trader.find_by(email: params[:email])
-    trader.balance += params[:amount].to_f
-    trader.save
-    render json: trader
+    if trader
+      trader.balance += params[:amount].to_f
+      trader.save
+      render json: trader
+    else
+      render status: 404
+    end
   end
 
   private
