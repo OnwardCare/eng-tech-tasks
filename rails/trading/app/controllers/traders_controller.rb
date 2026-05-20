@@ -24,9 +24,13 @@ class TradersController < ApplicationController
 
   def update
     trader = Trader.find_by(email: params[:email])
-    trader.name = params[:name]
-    trader.save
-    render json: trader
+    if trader
+      trader.name = params[:name]
+      trader.save
+      render json: trader
+    else
+      render status: 404
+    end
   end
 
   def add
