@@ -19,7 +19,11 @@ class TradersController < ApplicationController
 
   def find
     trader = Trader.find_by(email: params[:email])
-    render json: trader
+    if trader
+      render json: trader
+    else
+      render status: 404
+    end
   end
 
   def update
