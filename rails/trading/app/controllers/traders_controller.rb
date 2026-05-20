@@ -2,9 +2,13 @@ class TradersController < ApplicationController
   def register
     trader = Trader.new(trader_params)
     
-    if trader.save
-      render json: trader, status: 201
-    else
+    begin
+      if trader.save
+        render json: trader, status: 201
+      else
+        render status: 400
+      end
+    rescue ActiveRecord::RecordNotUnique
       render status: 400
     end
   end
