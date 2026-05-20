@@ -10,6 +10,11 @@ RSpec.describe Traders::AddBalanceService do
         expect(result.success?).to be true
         expect(result.data.reload.balance).to eq(150.5)
       end
+
+      it "calls Trader.increment_counter to perform an atomic update" do
+        expect(Trader).to receive(:increment_counter).with(:balance, trader.id, by: 100.5).and_call_original
+        described_class.call(email: "test@example.com", amount: 100.5)
+      end
     end
 
     context "when the trader does not exist" do

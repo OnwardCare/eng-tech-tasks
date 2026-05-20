@@ -1,11 +1,7 @@
 class TradersController < ApplicationController
   def register
     result = Traders::RegisterService.call(**trader_params.to_h.symbolize_keys)
-    if result.success?
-      render json: result.data, status: 201
-    else
-      render_service_error(result)
-    end
+    render_service_result(result, success_status: 201)
   end
 
   def all
@@ -21,23 +17,23 @@ class TradersController < ApplicationController
 
   def update
     result = Traders::UpdateService.call(email: params[:email], name: params[:name])
-    if result.success?
-      render json: result.data
-    else
-      render_service_error(result)
-    end
+    render_service_result(result)
   end
 
   def add
     result = Traders::AddBalanceService.call(email: params[:email], amount: params[:amount])
+    render_service_result(result)
+  end
+
+  private
+
+  def render_service_result(result, success_status: :ok)
     if result.success?
-      render json: result.data
+      render json: result.data, status: success_status
     else
       render_service_error(result)
     end
   end
-
-  private
 
   def render_service_error(result)
     status = if result.error_type == :not_found
