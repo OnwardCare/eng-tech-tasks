@@ -3,7 +3,7 @@ class TradersController < ApplicationController
     trader = Trader.new(trader_params)
     
     if trader.save
-      render json: trader
+      render json: trader, status: 201
     else
       render status: 400
     end
