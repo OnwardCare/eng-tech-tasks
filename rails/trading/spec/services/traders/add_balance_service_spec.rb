@@ -2,18 +2,13 @@ require 'rails_helper'
 
 RSpec.describe Traders::AddBalanceService do
   describe '.call' do
-    let!(:trader) { Trader.create!(name: 'Test Trader', email: 'test@example.com', balance: 50.0) }
+    let!(:trader) { Trader.create!(name: 'Test Trader', email: 'test@example.com') }
 
     context 'when the trader exists' do
       it "adds the amount to the trader's balance" do
         result = described_class.call(email: 'test@example.com', amount: 100.5)
         expect(result.success?).to be true
-        expect(result.data.reload.balance).to eq(150.5)
-      end
-
-      it 'calls Trader.increment_counter to perform an atomic update' do
-        expect(Trader).to receive(:increment_counter).with(:balance, trader.id, by: 100.5).and_call_original
-        described_class.call(email: 'test@example.com', amount: 100.5)
+        expect(result.data.balance).to eq(100.5)
       end
 
       it 'creates trader transaction for the balance change' do

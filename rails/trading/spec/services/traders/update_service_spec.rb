@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Traders::UpdateService do
   describe '.call' do
-    let!(:trader) { Trader.create!(name: 'Original Name', email: 'test@example.com', balance: 50.0) }
+    let!(:trader) { Trader.create!(name: 'Original Name', email: 'test@example.com') }
 
     context 'when the trader exists' do
       it "updates the trader's name" do

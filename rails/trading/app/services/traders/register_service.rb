@@ -7,7 +7,7 @@ module Traders
     end
 
     def call
-      trader = Trader.new(name: @name, email: @email, balance: @balance)
+      trader = Trader.new(name: @name, email: @email)
       Trader.transaction do
         trader.save!
         trader.trader_transactions.create!(amount: @balance)

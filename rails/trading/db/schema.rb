@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_27_193531) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_27_211200) do
   create_table "trader_transactions", force: :cascade do |t|
     t.integer "trader_id"
     t.decimal "amount", precision: 8, scale: 2
@@ -22,7 +22,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_27_193531) do
   create_table "traders", force: :cascade do |t|
     t.string "name"
     t.string "email"
-    t.float "balance"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_traders_on_email", unique: true

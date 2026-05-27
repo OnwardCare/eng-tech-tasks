@@ -22,7 +22,7 @@ RSpec.describe Traders::RegisterService do
 
     context 'when the email already exists' do
       before do
-        Trader.create!(name: 'Existing', email: 'test@example.com', balance: 0.0)
+        Trader.create!(name: 'Existing', email: 'test@example.com')
       end
 
       it 'returns a failure result with an error message' do

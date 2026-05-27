@@ -1,3 +1,4 @@
+# TODO: Delete this after migration has run
 namespace :trader_transactions do
   desc 'Backfills trader transactions'
   task backfill: :environment do

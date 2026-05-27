@@ -85,50 +85,23 @@ describe 'Traders', type: :request do
       post '/trading/traders/register', params: trader1
     end
 
-    context 'when the new feature is enabled' do
-      around(:each) do |example|
-        ENV['TRADER_TRANSACTIONS_BALANCE'] = 'true'
-        example.run
-      ensure
-        ENV['TRADER_TRANSACTIONS_BALANCE'] = 'false'
-      end
-
-      context 'when trader by given email exists' do
-        let!(:trader) do
-          Trader.create!(name: 'Original Name', email: 'test@example.com', balance: 50.0).tap do |t|
-            t.trader_transactions.create!(amount: 50.0)
-          end
-        end
-        it 'returns 200' do
-          put '/trading/traders/add', params: { email: trader.email, amount: 100 }
-          expect(response.status).to eq(200)
-          expect(JSON.parse(response.body)['balance']).to eq(150.0)
+    context 'when trader by given email exists' do
+      let!(:trader) do
+        Trader.create!(name: 'Original Name', email: 'test@example.com').tap do |t|
+          t.trader_transactions.create!(amount: 50.0)
         end
       end
-
-      context 'when trader by given email does not exist' do
-        it 'returns 404' do
-          put '/trading/traders/add', params: { email: 'non.existing@email.com', amount: 100 }
-          expect(response.status).to eq(404)
-        end
+      it 'returns 200' do
+        put '/trading/traders/add', params: { email: trader.email, amount: 100 }
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)['balance']).to eq(150.0)
       end
     end
 
-    context 'when the new feature is not enabled' do
-      context 'when trader by given email exists' do
-        let!(:trader) { Trader.create!(name: 'Original Name', email: 'test@example.com', balance: 50.0) }
-        it 'returns 200' do
-          put '/trading/traders/add', params: { email: trader.email, amount: 100 }
-          expect(response.status).to eq(200)
-          expect(JSON.parse(response.body)['balance']).to eq(150.0)
-        end
-      end
-
-      context 'when trader by given email does not exist' do
-        it 'returns 404' do
-          put '/trading/traders/add', params: { email: 'non.existing@email.com', amount: 100 }
-          expect(response.status).to eq(404)
-        end
+    context 'when trader by given email does not exist' do
+      it 'returns 404' do
+        put '/trading/traders/add', params: { email: 'non.existing@email.com', amount: 100 }
+        expect(response.status).to eq(404)
       end
     end
   end
@@ -145,42 +118,20 @@ describe 'Traders', type: :request do
   end
 
   describe 'GET /trading/traders/balance' do
-    let!(:trader) { Trader.create!(name: 'Balance Trader', email: 'balance.test@example.com', balance: 75.5) }
+    let!(:trader) { Trader.create!(name: 'Balance Trader', email: 'balance.test@example.com') }
 
-    context 'when the feature flag is disabled' do
-      it 'returns 200 and the balance from the database column' do
-        get '/trading/traders/balance', params: { email: trader.email }
-        expect(response.status).to eq(200)
-        expect(JSON.parse(response.body)).to eq({ 'balance' => 75.5 })
-      end
+    it 'returns 200 and the balance derived from transactions' do
+      trader.trader_transactions.create!(amount: 100.0)
+      trader.trader_transactions.create!(amount: -25.5)
 
-      it 'returns 404 if trader does not exist' do
-        get '/trading/traders/balance', params: { email: 'non.existent@example.com' }
-        expect(response.status).to eq(404)
-      end
+      get '/trading/traders/balance', params: { email: trader.email }
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)).to eq({ 'balance' => 74.5 })
     end
 
-    context 'when the feature flag is enabled' do
-      around(:each) do |example|
-        ENV['TRADER_TRANSACTIONS_BALANCE'] = 'true'
-        example.run
-      ensure
-        ENV['TRADER_TRANSACTIONS_BALANCE'] = 'false'
-      end
-
-      it 'returns 200 and the balance derived from transactions' do
-        trader.trader_transactions.create!(amount: 100.0)
-        trader.trader_transactions.create!(amount: -25.5)
-
-        get '/trading/traders/balance', params: { email: trader.email }
-        expect(response.status).to eq(200)
-        expect(JSON.parse(response.body)).to eq({ 'balance' => 74.5 })
-      end
-
-      it 'returns 404 if trader does not exist' do
-        get '/trading/traders/balance', params: { email: 'non.existent@example.com' }
-        expect(response.status).to eq(404)
-      end
+    it 'returns 404 if trader does not exist' do
+      get '/trading/traders/balance', params: { email: 'non.existent@example.com' }
+      expect(response.status).to eq(404)
     end
   end
 end
