@@ -33,5 +33,20 @@ RSpec.describe Traders::RegisterService do
         end.not_to change(Trader, :count)
       end
     end
+
+    context 'when validation fails' do
+      before do
+        allow_any_instance_of(Trader).to receive(:save!).and_raise(
+          ActiveRecord::RecordInvalid.new(Trader.new.tap { |t| t.errors.add(:name, "can't be blank") })
+        )
+      end
+
+      it 'returns a failed result with validation errors' do
+        result = described_class.call(**params)
+        expect(result.success?).to be false
+        expect(result.error_type).to eq(:validation_error)
+        expect(result.errors).to include("Name can't be blank")
+      end
+    end
   end
 end

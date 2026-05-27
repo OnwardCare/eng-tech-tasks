@@ -12,11 +12,9 @@ module Traders
         trader.save!
         trader.trader_transactions.create!(amount: @balance)
       end
-      if trader.valid?
-        Result.new(data: trader)
-      else
-        Result.new(errors: trader.errors.full_messages)
-      end
+      Result.new(data: trader)
+    rescue ActiveRecord::RecordInvalid => ex
+      Result.new(errors: ex.record.errors.full_messages, error_type: :validation_error)
     rescue ActiveRecord::RecordNotUnique
       # While technically not a validation error, this is caused by a duplicate email, so return a validation error message.
       Result.new(errors: ['Email has already been taken'], error_type: :validation_error)
