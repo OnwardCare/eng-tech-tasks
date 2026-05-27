@@ -15,6 +15,13 @@ class TradersController < ApplicationController
     render status: 404
   end
 
+  def balance
+    trader = Trader.find_by!(email: params[:email])
+    render json: { balance: trader.balance.to_f }
+  rescue ActiveRecord::RecordNotFound
+    render status: 404
+  end
+
   def update
     result = Traders::UpdateService.call(email: params[:email], name: params[:name])
     render_service_result(result)
