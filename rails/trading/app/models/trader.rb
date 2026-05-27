@@ -8,10 +8,6 @@ class Trader < ApplicationRecord
   end
 
   def balance
-    if ENV['TRADER_TRANSACTIONS_BALANCE'] == 'true'
-      trader_transactions.sum(:amount)
-    else
-      super
-    end
+    Traders::BalanceQuery.call(self)
   end
 end
