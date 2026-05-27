@@ -8,7 +8,11 @@ module Traders
 
     def call
       trader = Trader.new(name: @name, email: @email, balance: @balance)
-      if trader.save
+      Trader.transaction do
+        trader.save!
+        trader.trader_transactions.create!(amount: @balance)
+      end
+      if trader.valid?
         Result.new(data: trader)
       else
         Result.new(errors: trader.errors.full_messages)
