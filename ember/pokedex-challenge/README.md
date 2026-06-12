@@ -1,8 +1,9 @@
 # Pokédex Challenge
 
-A small Gen-1 Pokédex built with Ember 5 (Octane) on top of the public
-[PokéAPI](https://pokeapi.co/) (no API key needed). The app runs, but it is
-unfinished and has some rough edges — that's where you come in.
+A small Gen-1 Pokédex built with Ember 6.12 (`<template>` tag components, Vite)
+on top of the public [PokéAPI](https://pokeapi.co/) (no API key needed). The
+app runs, but it is unfinished and has some rough edges — that's where you come
+in.
 
 What exists today:
 
@@ -22,9 +23,14 @@ npm install
 npm start
 ```
 
-Then open <http://localhost:4200>. Node 18 or 20 recommended.
+Then open <http://localhost:4200>. Node 20.19+ or 22 required.
 
-Run the test suite with `npm run test:ember`.
+Run the test suite with `npm test`.
+
+## Time box
+
+Plan for about **5 hours** total. We'd rather see fewer things done well than
+everything done halfway. Commit as you go so we can follow your thinking.
 
 ## Your tasks
 

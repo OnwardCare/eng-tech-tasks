@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { visit, findAll } from '@ember/test-helpers';
-import { setupApplicationTest } from 'ember-qunit';
+import { setupApplicationTest } from 'pokedex-challenge/tests/helpers';
 
 module('Acceptance | list', function (hooks) {
   setupApplicationTest(hooks);
