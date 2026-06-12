@@ -1,0 +1,13 @@
+<div class="featured-rotator">
+  {{#if this.featured}}
+    <span class="featured-label">Featured Pokémon</span>
+    <LinkTo @route="pokemon" @model={{this.featured.id}} class="featured-link">
+      <img
+        src={{this.featured.sprite}}
+        alt={{this.featured.name}}
+        class="featured-sprite"
+      />
+      <span class="featured-name">{{this.featured.name}}</span>
+    </LinkTo>
+  {{/if}}
+</div>

@@ -1,0 +1,30 @@
+<FeaturedRotator />
+
+<div class="list-controls">
+  <input
+    type="text"
+    placeholder="Search by name"
+    value={{this.searchTerm}}
+    class="search-input"
+    {{on "input" this.updateSearch}}
+  />
+  <select class="sort-select" {{on "change" this.updateSort}}>
+    <option value="id">Sort by ID</option>
+    <option value="name">Sort by name</option>
+  </select>
+</div>
+
+<div class="pokemon-grid">
+  {{#each this.filteredPokemon as |pokemon|}}
+    <PokemonCard @pokemon={{pokemon}} />
+  {{/each}}
+</div>
+
+<div class="pagination">
+  <button type="button" class="page-button" {{on "click" this.previousPage}}>
+    Previous
+  </button>
+  <button type="button" class="page-button" {{on "click" this.nextPage}}>
+    Next
+  </button>
+</div>
