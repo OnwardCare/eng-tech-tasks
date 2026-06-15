@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pokedex",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--prefix", "ember/pokedex-challenge"],
+      "port": 4200
+    }
+  ]
+}
