@@ -58,6 +58,9 @@ export default defineConfig([
         ...globals.browser,
       },
     },
+    rules: {
+      'warp-drive/no-external-request-patterns': 'off',
+    },
   },
   {
     ...qunit.configs.recommended,
