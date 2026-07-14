@@ -1,7 +1,22 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import config from 'pokedex-challenge/config/environment';
+
+const STORAGE_KEY = 'pokedex-favorites';
 
 export default class FavoritesService extends Service {
-  items = [];
+  @tracked items = [];
+
+  constructor() {
+    super(...arguments);
+    if (config.environment === 'test') return;
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) this.items = JSON.parse(stored);
+    } catch {
+      this.items = [];
+    }
+  }
 
   get count() {
     return this.items.length;
@@ -12,21 +27,26 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    const entry = {
+      id: pokemon.id,
+      name: pokemon.name,
+      sprite: pokemon.sprite ?? pokemon.artwork,
+      types: pokemon.types ?? [],
+    };
+    this.items = [...this.items, entry];
+    this.#persist();
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    this.items = this.items.filter((item) => item.id !== id);
+    this.#persist();
   }
 
   toggle(pokemon) {
-    if (this.isFavorite(pokemon.id)) {
-      this.remove(pokemon.id);
-    } else {
-      this.add(pokemon);
-    }
+    this.isFavorite(pokemon.id) ? this.remove(pokemon.id) : this.add(pokemon);
+  }
+
+  #persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items));
   }
 }

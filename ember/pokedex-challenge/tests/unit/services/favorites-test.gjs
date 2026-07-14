@@ -9,7 +9,9 @@ module('Unit | Service | favorites', function (hooks) {
     const favorites = this.owner.lookup('service:favorites');
 
     await render(
-      <template><span id="count">{{favorites.count}}</span></template>,
+      <template>
+        <span id="count">{{favorites.count}}</span>
+      </template>,
     );
     assert.dom('#count').hasText('0');
 

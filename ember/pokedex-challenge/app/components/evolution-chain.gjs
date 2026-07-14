@@ -1,3 +1,16 @@
+import { LinkTo } from '@ember/routing';
+
 <template>
-  <div class="evolution-placeholder">Evolution chain coming soon</div>
+  {{#if @chain.length}}
+    <div class="evolution-chain">
+      {{#each @chain as |stage|}}
+        {{#if stage.separator}}
+          <span class="evo-sep">{{stage.separator}}</span>
+        {{/if}}
+        <LinkTo @route="pokemon" @model={{stage.id}} class="evo-stage">
+          {{stage.name}}
+        </LinkTo>
+      {{/each}}
+    </div>
+  {{/if}}
 </template>

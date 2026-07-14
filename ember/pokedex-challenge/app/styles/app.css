@@ -2,12 +2,24 @@
   box-sizing: border-box;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 body {
   margin: 0;
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -115,6 +127,19 @@ a {
   text-align: center;
 }
 
+.favorite-button {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #bbb;
+  line-height: 1;
+}
+
+.favorite-button.is-favorite {
+  color: #f5b942;
+}
+
 .pokemon-card .favorite-button {
   position: absolute;
   top: 0.5rem;
@@ -149,19 +174,6 @@ a {
 .type-badge {
   font-size: 0.8rem;
   text-transform: capitalize;
-}
-
-.favorite-button {
-  border: none;
-  background: transparent;
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: #bbb;
-  line-height: 1;
-}
-
-.favorite-button.is-favorite {
-  color: #f5b942;
 }
 
 .pagination {

@@ -3,6 +3,5 @@ import PokemonDetail from 'pokedex-challenge/components/pokemon-detail';
 
 <template>
   {{pageTitle "Pokémon"}}
-
-  <PokemonDetail @pokemonId={{@model}} />
+  <PokemonDetail @model={{@model}} />
 </template>
