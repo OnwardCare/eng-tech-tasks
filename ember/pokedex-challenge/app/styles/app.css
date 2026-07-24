@@ -166,6 +166,7 @@ a {
 
 .pagination {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 0.75rem;
   margin: 1.5rem 0;
@@ -178,6 +179,25 @@ a {
   background: #fff;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.page-button:disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+.page-indicator {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.list-status {
+  color: #777;
+  text-align: center;
+}
+
+.list-error {
+  color: #b00020;
 }
 
 .pokemon-detail {

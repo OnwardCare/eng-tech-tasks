@@ -37,6 +37,23 @@ export default class PokeDataService extends Service {
 		return this.request(`${BASE_URL}/pokemon/${idOrName}`);
 	}
 
+	async fetchPage(offset = 0, limit = 20) {
+		const list = await this.fetchList(offset, limit);
+
+		return Promise.all(
+			list.results.map(async (entry) => {
+				const detail = await this.request(entry.url);
+
+				return {
+					id: detail.id,
+					name: detail.name,
+					sprite: detail.sprites.front_default,
+					types: detail.types.map((t) => t.type.name),
+				};
+			}),
+		);
+	}
+
 	fetchSpecies(idOrName) {
 		return this.request(`${BASE_URL}/pokemon-species/${idOrName}`);
 	}
