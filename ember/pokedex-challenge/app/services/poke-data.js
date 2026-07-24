@@ -1,7 +1,10 @@
 import Service from "@ember/service";
 import { pathsFromChain } from "pokedex-challenge/utils/evolution-chain";
+import { idFromUrl } from "pokedex-challenge/utils/poke-api";
 
 const BASE_URL = "https://pokeapi.co/api/v2";
+
+export const GEN_1_COUNT = 151;
 
 export default class PokeDataService extends Service {
 	#requests = new Map();
@@ -41,17 +44,34 @@ export default class PokeDataService extends Service {
 		const list = await this.fetchList(offset, limit);
 
 		return Promise.all(
-			list.results.map(async (entry) => {
-				const detail = await this.request(entry.url);
-
-				return {
-					id: detail.id,
-					name: detail.name,
-					sprite: detail.sprites.front_default,
-					types: detail.types.map((t) => t.type.name),
-				};
-			}),
+			list.results.map(async (entry) =>
+				this.#toCard(await this.request(entry.url)),
+			),
 		);
+	}
+
+	async fetchIndex() {
+		const list = await this.fetchList(0, GEN_1_COUNT);
+
+		return list.results.map((entry) => ({
+			id: idFromUrl(entry.url),
+			name: entry.name,
+		}));
+	}
+
+	fetchCards(ids) {
+		return Promise.all(
+			ids.map(async (id) => this.#toCard(await this.fetchPokemon(id))),
+		);
+	}
+
+	#toCard(detail) {
+		return {
+			id: detail.id,
+			name: detail.name,
+			sprite: detail.sprites.front_default,
+			types: detail.types.map((t) => t.type.name),
+		};
 	}
 
 	fetchSpecies(idOrName) {

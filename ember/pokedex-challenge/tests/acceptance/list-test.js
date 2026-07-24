@@ -1,5 +1,5 @@
 import { module, test } from 'qunit';
-import { visit, click, findAll } from '@ember/test-helpers';
+import { visit, click, fillIn, findAll } from '@ember/test-helpers';
 import { setupApplicationTest } from 'pokedex-challenge/tests/helpers';
 
 function firstCardName() {
@@ -21,6 +21,21 @@ module('Acceptance | list', function (hooks) {
         '.page > .pokemon-grid > .pokemon-card:nth-child(1) .pokemon-link h3.pokemon-name',
       )
       .hasText('bulbasaur');
+  });
+
+  test('search covers the whole pokedex, not just the page on screen', async function (assert) {
+    await visit('/');
+
+    await fillIn('.search-input', 'eevee');
+
+    assert.strictEqual(findAll('.pokemon-card').length, 1);
+    assert.strictEqual(firstCardName(), 'eevee');
+    assert.dom('.pagination').doesNotExist('one page of results');
+
+    await fillIn('.search-input', '');
+
+    assert.strictEqual(firstCardName(), 'bulbasaur', 'back to the full list');
+    assert.dom('.page-indicator').hasText('Page 1 of 8');
   });
 
   test('Next and Previous page through the pokedex', async function (assert) {

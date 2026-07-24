@@ -1,8 +1,5 @@
 import { module, test } from 'qunit';
-import {
-  idFromUrl,
-  pathsFromChain,
-} from 'pokedex-challenge/utils/evolution-chain';
+import { pathsFromChain } from 'pokedex-challenge/utils/evolution-chain';
 
 function species(id, name, evolvesTo = []) {
   return {
@@ -19,19 +16,6 @@ function names(paths) {
 }
 
 module('Unit | Utility | evolution-chain', function () {
-  test('idFromUrl pulls the trailing id out of a resource url', function (assert) {
-    assert.strictEqual(
-      idFromUrl('https://pokeapi.co/api/v2/pokemon-species/25/'),
-      25,
-    );
-    assert.strictEqual(
-      idFromUrl('https://pokeapi.co/api/v2/pokemon-species/25'),
-      25,
-    );
-    assert.strictEqual(idFromUrl(undefined), null);
-    assert.strictEqual(idFromUrl('not-a-url'), null);
-  });
-
   test('pathsFromChain returns a linear line as a single path', function (assert) {
     const chain = species(1, 'bulbasaur', [
       species(2, 'ivysaur', [species(3, 'venusaur')]),

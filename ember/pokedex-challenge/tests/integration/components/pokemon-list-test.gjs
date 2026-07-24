@@ -12,20 +12,25 @@ function card(id) {
   return { id, name: `pokemon-${id}`, sprite: `/${id}.png`, types: [] };
 }
 
-function page(offset, limit) {
-  return Array.from({ length: limit }, (_, index) => card(offset + index + 1));
-}
+const INDEX = Array.from({ length: GEN_1_COUNT }, (_, i) => ({
+  id: i + 1,
+  name: `pokemon-${i + 1}`,
+}));
+
+const FIRST_PAGE = INDEX.slice(0, PAGE_SIZE).map((entry) => card(entry.id));
 
 class StubPokeData extends Service {
-  requestedOffsets = [];
+  cardRequests = [];
 
-  fetchPage(offset, limit) {
-    this.requestedOffsets.push(offset);
-    return Promise.resolve(page(offset, limit));
+  fetchIndex() {
+    return Promise.resolve(INDEX);
+  }
+
+  fetchCards(ids) {
+    this.cardRequests.push(ids);
+    return Promise.resolve(ids.map(card));
   }
 }
-
-const FIRST_PAGE = page(0, PAGE_SIZE);
 
 function renderedIds() {
   return findAll('.pokemon-card .pokemon-id').map((el) =>
@@ -82,21 +87,84 @@ module('Integration | Component | pokemon-list', function (hooks) {
     );
   });
 
-  test('a page is only fetched once', async function (assert) {
+  test('a page is only loaded once', async function (assert) {
     await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
 
     await click('.page-button:last-of-type');
     await click('.page-button:first-of-type');
     await click('.page-button:last-of-type');
 
-    assert.deepEqual(
-      this.owner.lookup('service:poke-data').requestedOffsets,
-      [PAGE_SIZE],
-      'page 1 comes from the route, page 2 is cached after the first visit',
+    assert.strictEqual(
+      this.owner.lookup('service:poke-data').cardRequests.length,
+      1,
+      'page 1 comes from the route, page 2 is reused once loaded',
     );
   });
 
-  test('sorting does not disturb the page it was given', async function (assert) {
+  test('search finds pokemon that are not on the current page', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.search-input', 'pokemon-133');
+
+    assert.deepEqual(renderedIds(), ['#133'], 'found without paging to it');
+    assert.dom('.pagination').doesNotExist('a single page needs no controls');
+  });
+
+  test('search is case-insensitive and trimmed', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.search-input', '  POKEMON-25 ');
+
+    assert.deepEqual(renderedIds(), ['#25']);
+  });
+
+  test('search results paginate when there are too many for one page', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.search-input', 'pokemon-1');
+
+    assert.strictEqual(renderedIds().length, PAGE_SIZE);
+    assert.deepEqual(renderedIds().slice(0, 2), ['#1', '#10']);
+    assert.dom('.page-indicator').hasText('Page 1 of 4');
+
+    await click('.page-button:last-of-type');
+
+    // Page 1 of the matches is #1, #10-#19, then #100-#108.
+    assert.strictEqual(renderedIds()[0], '#109', 'the second page of matches');
+    assert.dom('.page-indicator').hasText('Page 2 of 4');
+  });
+
+  test('a search with no matches says so', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.search-input', 'mewthree');
+
+    assert.dom('.empty-state').hasText('No Pokémon match "mewthree".');
+    assert.dom('.pokemon-grid').doesNotExist();
+    assert.dom('.pagination').doesNotExist();
+  });
+
+  test('clearing the search returns to the full list', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.search-input', 'pokemon-133');
+    await fillIn('.search-input', '');
+
+    assert.strictEqual(renderedIds().length, PAGE_SIZE);
+    assert.strictEqual(renderedIds()[0], '#1');
+    assert.dom('.page-indicator').hasText('Page 1 of 8');
+  });
+
+  test('sorting orders the whole dex, not just the visible page', async function (assert) {
+    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
+
+    await fillIn('.sort-select', 'name');
+
+    assert.deepEqual(renderedIds().slice(0, 3), ['#1', '#10', '#100']);
+    assert.dom('.page-indicator').hasText('Page 1 of 8');
+  });
+
+  test('the array of pokemon passed in is left alone', async function (assert) {
     const pokemon = [card(3), card(1), card(2)];
 
     await render(<template><PokemonList @pokemon={{pokemon}} /></template>);
@@ -105,27 +173,7 @@ module('Integration | Component | pokemon-list', function (hooks) {
     assert.deepEqual(
       pokemon.map((p) => p.id),
       [3, 1, 2],
-      'the array passed in is left alone',
+      'without touching the route model',
     );
-  });
-
-  test('search filters the current page', async function (assert) {
-    await render(<template><PokemonList @pokemon={{FIRST_PAGE}} /></template>);
-
-    await fillIn('.search-input', 'pokemon-1');
-
-    assert.deepEqual(renderedIds(), [
-      '#1',
-      '#10',
-      '#11',
-      '#12',
-      '#13',
-      '#14',
-      '#15',
-      '#16',
-      '#17',
-      '#18',
-      '#19',
-    ]);
   });
 });

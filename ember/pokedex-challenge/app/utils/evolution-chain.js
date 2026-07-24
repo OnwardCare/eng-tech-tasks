@@ -1,9 +1,4 @@
-const ID_PATTERN = /\/(\d+)\/?$/;
-
-export function idFromUrl(url) {
-	const match = ID_PATTERN.exec(url ?? "");
-	return match ? Number(match[1]) : null;
-}
+import { idFromUrl } from "pokedex-challenge/utils/poke-api";
 
 export function pathsFromChain(chain) {
 	if (!chain) {
