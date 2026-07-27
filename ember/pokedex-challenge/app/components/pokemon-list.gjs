@@ -14,8 +14,13 @@ export default class PokemonList extends Component {
 
   @tracked searchTerm = '';
   @tracked sortBy = 'id';
+
+  // Offset for the normal paginated browse
   @tracked offset = 0;
   @tracked currentPage = null;
+
+  // Separate offset for search results so the two modes don't share state
+  @tracked searchOffset = 0;
 
   // Holds all 151 Pokémon once loaded for full-set searching
   @tracked allPokemon = null;
@@ -25,9 +30,8 @@ export default class PokemonList extends Component {
     return this.currentPage || this.args.pokemon;
   }
 
-  get filteredPokemon() {
-    // When searching, operate over the full Gen-1 set (or the loaded pages so far
-    // while the full set is still loading)
+  // Full sorted+filtered list, without pagination slice applied yet
+  get _sortedFiltered() {
     const source = this.searchTerm
       ? (this.allPokemon ?? this.pokemon)
       : this.pokemon;
@@ -39,10 +43,29 @@ export default class PokemonList extends Component {
       : source;
 
     if (this.sortBy === 'name') {
-      // Sort on a copy to avoid mutating the cached page array
+      // Sort on a copy to avoid mutating the cached array
       return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
     }
     return [...filtered].sort((a, b) => a.id - b.id);
+  }
+
+  // Slice _sortedFiltered to PAGE_SIZE based on the active mode offset
+  get filteredPokemon() {
+    const all = this._sortedFiltered;
+    const start = this.searchTerm ? this.searchOffset : this.offset;
+    return all.slice(start, start + PAGE_SIZE);
+  }
+
+  get _activeOffset() {
+    return this.searchTerm ? this.searchOffset : this.offset;
+  }
+
+  get isNextDisabled() {
+    return this._activeOffset + PAGE_SIZE >= this._sortedFiltered.length;
+  }
+
+  get isPreviousDisabled() {
+    return this._activeOffset === 0;
   }
 
   // Fetch all 151 Gen-1 Pokémon in parallel once and cache the result.
@@ -72,6 +95,8 @@ export default class PokemonList extends Component {
   @action
   async updateSearch(event) {
     this.searchTerm = event.target.value;
+    // Reset search pagination on every keystroke so results always start at page 1
+    this.searchOffset = 0;
     // Trigger a full load the first time the user types — cache makes this cheap
     // after the first load or if the user has already browsed pages
     if (this.searchTerm && !this.allPokemon && !this.isLoadingAll) {
@@ -82,9 +107,13 @@ export default class PokemonList extends Component {
   @action
   updateSort(event) {
     this.sortBy = event.target.value;
+    // Reset both offsets so sorted results always start at page 1
+    this.searchOffset = 0;
+    this.offset = 0;
+    this.currentPage = null;
   }
 
-  // Shared helper to fetch a page by offset; uses the service for caching
+  // Shared helper to fetch a remote page by offset; uses the service for caching
   async _loadPage(offset) {
     const limit = Math.min(PAGE_SIZE, GEN_1_COUNT - offset);
     const list = await this.pokeData.fetchList(offset, limit);
@@ -107,25 +136,32 @@ export default class PokemonList extends Component {
 
   @action
   async nextPage() {
-    if (this.offset + PAGE_SIZE >= GEN_1_COUNT) {
-      return;
+    if (this.isNextDisabled) return;
+
+    if (this.searchTerm) {
+      // For search results, just advance the slice — no network call needed
+      this.searchOffset = this.searchOffset + PAGE_SIZE;
+    } else {
+      this.offset = this.offset + PAGE_SIZE;
+      this.currentPage = await this._loadPage(this.offset);
     }
-    this.offset = this.offset + PAGE_SIZE;
-    this.currentPage = await this._loadPage(this.offset);
   }
 
   @action
   async previousPage() {
-    if (this.offset === 0) {
-      return;
+    if (this.isPreviousDisabled) return;
+
+    if (this.searchTerm) {
+      this.searchOffset = Math.max(0, this.searchOffset - PAGE_SIZE);
+    } else {
+      this.offset = Math.max(0, this.offset - PAGE_SIZE);
+      // First page was loaded by the route; restore it from args to avoid a redundant request
+      if (this.offset === 0) {
+        this.currentPage = null;
+      } else {
+        this.currentPage = await this._loadPage(this.offset);
+      }
     }
-    this.offset = Math.max(0, this.offset - PAGE_SIZE);
-    // First page was loaded by the route; restore it from args to avoid a redundant request
-    if (this.offset === 0) {
-      this.currentPage = null;
-      return;
-    }
-    this.currentPage = await this._loadPage(this.offset);
   }
 
   <template>
@@ -155,20 +191,24 @@ export default class PokemonList extends Component {
       {{/each}}
     </div>
 
-    {{! Hide pagination while searching — results span the full set }}
-    {{#unless this.searchTerm}}
-      <div class="pagination">
-        <button
-          type="button"
-          class="page-button"
-          {{on "click" this.previousPage}}
-        >
-          Previous
-        </button>
-        <button type="button" class="page-button" {{on "click" this.nextPage}}>
-          Next
-        </button>
-      </div>
-    {{/unless}}
+    {{! Pagination works in both browse and search modes, auto-disables at boundaries }}
+    <div class="pagination">
+      <button
+        type="button"
+        class="page-button"
+        disabled={{this.isPreviousDisabled}}
+        {{on "click" this.previousPage}}
+      >
+        Previous
+      </button>
+      <button
+        type="button"
+        class="page-button"
+        disabled={{this.isNextDisabled}}
+        {{on "click" this.nextPage}}
+      >
+        Next
+      </button>
+    </div>
   </template>
 }
