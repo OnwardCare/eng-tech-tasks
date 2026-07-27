@@ -66,3 +66,58 @@ don't need to gold-plate everything — prioritize like you would on a real team
 - Commit hygiene and clarity
 
 Have fun — gotta catch 'em all.
+
+## Notes for reviewers
+
+Commits are ordered so each one is a self-contained, reviewable step; see the
+git log for the full breakdown. Summary of what changed and why:
+
+- **Favorites reactivity + persistence.** `items` was a plain array mutated
+  with `push`/`splice`, which Glimmer doesn't track — that's why `count`
+  never updated (the one failing test at the start). Switched to a
+  `@tracked` array with immutable updates, added `localStorage`
+  read/write-through, and made `favorite-button` derive `isFavorite` from
+  the service instead of keeping its own stale copy. `/favorites` now reads
+  the service directly instead of a route-model snapshot, which would
+  otherwise go stale the moment `items` is reassigned.
+- **Evolution chain.** Added `fetchSpecies`/`fetchEvolutionChain` to the
+  `poke-data` service, walk the recursive chain into a tree, and render it
+  in order with each stage linking to its own detail page. Branching chains
+  (Eevee's three evolutions) render as multiple lines rather than assuming
+  a single line. Building this surfaced a real bug: `pokemon-detail` only
+  fetched in its constructor, but Ember reuses that component instance
+  across `/pokemon/:id` route changes, so clicking an evolution stage
+  changed the URL without changing the page. Fixed with an `ember-modifier`
+  that reloads whenever `@pokemonId` changes.
+- **Data-layer boundaries.** `pokemon-detail`, `featured-rotator`, the index
+  route, and pagination all used to call `fetch()` directly with hand-built
+  URLs. Everything now goes through `poke-data`, which also caches by
+  request key (including in-flight promises, so concurrent callers share
+  one request instead of duplicating it) and evicts failed requests so
+  they're retried rather than cached forever.
+- **Search/pagination.** Search only matched whichever 20 Pokémon happened
+  to be on the current page, and "Previous" was a `console.log` no-op.
+  Since Gen 1 is a small, fixed set (151), the index route now fetches the
+  full name/id list once and the list component does search, sort, and
+  pagination entirely client-side, only fetching full details (sprite,
+  types) for whichever page is actually visible. Added proper
+  loading/error states and disabled the Previous/Next buttons at the
+  boundaries instead of relying on silent early-returns.
+- **Other fixes:** `featured-rotator`'s `setInterval` was never cleared
+  (kept fetching, and could write to a destroyed component, after leaving
+  the page); `filteredPokemon` sorted the source array in place instead of
+  a copy; removed an unused, dead `@warp-drive` store service left over
+  from the scaffold.
+
+**Known trade-offs / what I'd do with more time:**
+
+- The acceptance/integration tests hit the real PokéAPI rather than a mock
+  layer (e.g. `msw` or a fixture-based fetch stub) — matches the existing
+  test style in this repo, but a mocked HTTP layer would make the whole
+  suite deterministic and fast regardless of network conditions.
+- No request de-duplication/backoff for the featured-rotator's polling
+  fetch beyond the cache — fine at this scale, but a longer-lived app would
+  want retry/backoff on failure instead of silently trying again in 8s.
+- Sorting/searching 151 lightweight entries client-side is effectively
+  free; this approach wouldn't scale to a much larger dataset without
+  moving filtering server-side.
