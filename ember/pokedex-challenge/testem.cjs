@@ -21,5 +21,9 @@ if (typeof module !== 'undefined') {
         ].filter(Boolean),
       },
     },
+    // Allow overriding the Chrome binary via CHROME_BIN env var (useful in CI and non-standard installs)
+    browser_paths: {
+      Chrome: process.env.CHROME_BIN || undefined,
+    },
   };
 }
