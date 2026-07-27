@@ -30,11 +30,18 @@ export default class PokemonList extends Component {
     return this.currentPage || this.args.pokemon;
   }
 
+  // Returns the single page from the API or the full 151 list if it's been loaded
+  get _activeSource() {
+    return this.allPokemon ?? this.pokemon;
+  }
+
+  get _isLocalMode() {
+    return this.allPokemon !== null;
+  }
+
   // Full sorted+filtered list, without pagination slice applied yet
   get _sortedFiltered() {
-    const source = this.searchTerm
-      ? (this.allPokemon ?? this.pokemon)
-      : this.pokemon;
+    const source = this._activeSource;
 
     const filtered = this.searchTerm
       ? source.filter((p) =>
@@ -49,11 +56,17 @@ export default class PokemonList extends Component {
     return [...filtered].sort((a, b) => a.id - b.id);
   }
 
-  // Slice _sortedFiltered to PAGE_SIZE based on the active mode offset
+  // Slice _sortedFiltered to PAGE_SIZE only if we are operating on the full local set
   get filteredPokemon() {
     const all = this._sortedFiltered;
-    const start = this.searchTerm ? this.searchOffset : this.offset;
-    return all.slice(start, start + PAGE_SIZE);
+    
+    if (this._isLocalMode) {
+      const start = this.searchTerm ? this.searchOffset : this.offset;
+      return all.slice(start, start + PAGE_SIZE);
+    }
+    
+    // In API mode, 'all' is already just the 20 items for the current page
+    return all;
   }
 
   get _activeOffset() {
@@ -61,7 +74,10 @@ export default class PokemonList extends Component {
   }
 
   get isNextDisabled() {
-    return this._activeOffset + PAGE_SIZE >= this._sortedFiltered.length;
+    if (this._isLocalMode) {
+      return this._activeOffset + PAGE_SIZE >= this._sortedFiltered.length;
+    }
+    return this.offset + PAGE_SIZE >= GEN_1_COUNT;
   }
 
   get isPreviousDisabled() {
@@ -105,8 +121,12 @@ export default class PokemonList extends Component {
   }
 
   @action
-  updateSort(event) {
+  async updateSort(event) {
     this.sortBy = event.target.value;
+    // We need the full list to perform a true global sort.
+    if (!this._isLocalMode && !this.isLoadingAll) {
+      await this._loadAll();
+    }
     // Reset both offsets so sorted results always start at page 1
     this.searchOffset = 0;
     this.offset = 0;
@@ -139,11 +159,14 @@ export default class PokemonList extends Component {
     if (this.isNextDisabled) return;
 
     if (this.searchTerm) {
-      // For search results, just advance the slice — no network call needed
+      // For search results, just advance the slice
       this.searchOffset = this.searchOffset + PAGE_SIZE;
     } else {
       this.offset = this.offset + PAGE_SIZE;
-      this.currentPage = await this._loadPage(this.offset);
+      // Only hit the API if we aren't holding the full list in memory
+      if (!this._isLocalMode) {
+        this.currentPage = await this._loadPage(this.offset);
+      }
     }
   }
 
@@ -155,11 +178,13 @@ export default class PokemonList extends Component {
       this.searchOffset = Math.max(0, this.searchOffset - PAGE_SIZE);
     } else {
       this.offset = Math.max(0, this.offset - PAGE_SIZE);
-      // First page was loaded by the route; restore it from args to avoid a redundant request
-      if (this.offset === 0) {
-        this.currentPage = null;
-      } else {
-        this.currentPage = await this._loadPage(this.offset);
+      if (!this._isLocalMode) {
+        // First page was loaded by the route; restore it from args to avoid a redundant request
+        if (this.offset === 0) {
+          this.currentPage = null;
+        } else {
+          this.currentPage = await this._loadPage(this.offset);
+        }
       }
     }
   }
