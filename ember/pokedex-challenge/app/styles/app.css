@@ -250,12 +250,38 @@ a {
   color: #666;
 }
 
-.evolution-placeholder {
-  padding: 1rem;
-  border: 1px dashed #ccc;
+.evolution-chain {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+}
+
+.evolution-stage a {
+  text-transform: capitalize;
+  font-weight: 600;
+  color: #d53b47;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d53b47;
   border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.evolution-stage a:hover {
+  background: #d53b47;
+  color: #fff;
+}
+
+.evolution-arrow {
+  color: #aaa;
+  font-size: 1.1rem;
+}
+
+.evolution-loading,
+.evolution-error {
   color: #999;
-  text-align: center;
+  font-size: 0.9rem;
 }
 
 .empty-state {

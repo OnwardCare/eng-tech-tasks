@@ -43,18 +43,19 @@ export default class EvolutionChain extends Component {
     {{#if this.error}}
       <p class="evolution-error">{{this.error}}</p>
     {{else if this.stages}}
-      <ol class="evolution-chain">
+      {{! Render chain inline: stage → stage → stage }}
+      <div class="evolution-chain">
         {{#each this.stages as |stage index|}}
           {{#if index}}
-            <li class="evolution-arrow" aria-hidden="true">→</li>
+            <span class="evolution-arrow" aria-hidden="true">→</span>
           {{/if}}
-          <li class="evolution-stage">
+          <span class="evolution-stage">
             <LinkTo @route="pokemon" @model={{stage.id}}>
               {{stage.name}}
             </LinkTo>
-          </li>
+          </span>
         {{/each}}
-      </ol>
+      </div>
     {{else}}
       <p class="evolution-loading">Loading…</p>
     {{/if}}
