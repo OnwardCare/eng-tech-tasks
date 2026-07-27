@@ -1,7 +1,11 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+
+const STORAGE_KEY = 'pokedex-favorites';
 
 export default class FavoritesService extends Service {
-  items = [];
+  // Load persisted favorites from localStorage on init; default to empty array
+  @tracked items = this._load();
 
   get count() {
     return this.items.length;
@@ -12,14 +16,15 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    // Reassign instead of mutating so @tracked detects the change
+    this.items = [...this.items, pokemon];
+    this._persist();
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    // Reassign to a new filtered array — triggers @tracked update
+    this.items = this.items.filter((item) => item.id !== id);
+    this._persist();
   }
 
   toggle(pokemon) {
@@ -28,5 +33,20 @@ export default class FavoritesService extends Service {
     } else {
       this.add(pokemon);
     }
+  }
+
+  // Read from localStorage; returns an empty array if nothing is stored or JSON is invalid
+  _load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Sync current items to localStorage after every change
+  _persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items));
   }
 }
