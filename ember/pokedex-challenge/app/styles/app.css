@@ -187,6 +187,17 @@ a {
   padding: 1.5rem;
 }
 
+.detail-loading,
+.detail-error {
+  padding: 2rem;
+  text-align: center;
+  color: #777;
+}
+
+.detail-error {
+  color: #b00020;
+}
+
 .detail-header {
   display: flex;
   gap: 1.5rem;

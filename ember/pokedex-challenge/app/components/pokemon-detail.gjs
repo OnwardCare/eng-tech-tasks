@@ -1,53 +1,78 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 export default class PokemonDetail extends Component {
+  @service pokeData;
+
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked isLoading = true;
+  @tracked error = null;
 
-  // Ember reuses this component instance when navigating between
-  // /pokemon/:id routes with a different id (the outlet doesn't tear
-  // down), so a constructor-only load left the page stuck on stale
-  // data. This modifier re-runs whenever @pokemonId changes.
+  // The detail route reuses this component instance when only the dynamic
+  // segment changes (e.g. navigating between evolution stages), so a
+  // constructor-only fetch would only ever run once. This modifier re-runs
+  // whenever @pokemonId changes, keeping the page in sync with the route.
   loadOnChange = modifier((_element, [pokemonId]) => {
     this.loadPokemon(pokemonId);
   });
 
   async loadPokemon(pokemonId) {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
-    );
-    const data = await response.json();
-    this.pokemon = {
-      id: data.id,
-      name: data.name,
-      height: data.height,
-      weight: data.weight,
-      artwork: data.sprites.other['official-artwork'].front_default,
-      types: data.types.map((t) => t.type.name),
-      abilities: data.abilities.map((a) => a.ability.name),
-      stats: data.stats.map((s) => ({
-        name: s.stat.name,
-        value: s.base_stat,
-      })),
-    };
-    const speciesResponse = await fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${data.id}`,
-    );
-    const species = await speciesResponse.json();
-    const entry = species.flavor_text_entries.find(
-      (e) => e.language.name === 'en',
-    );
-    this.flavorText = entry ? entry.flavor_text : '';
+    this.isLoading = true;
+    this.error = null;
+
+    try {
+      const [data, species] = await Promise.all([
+        this.pokeData.fetchPokemon(pokemonId),
+        this.pokeData.fetchSpecies(pokemonId),
+      ]);
+
+      // Guard against a slower, now-stale request resolving after a newer
+      // one has already started (e.g. rapidly clicking evolution stages).
+      if (String(pokemonId) !== String(this.args.pokemonId)) {
+        return;
+      }
+
+      this.pokemon = {
+        id: data.id,
+        name: data.name,
+        height: data.height,
+        weight: data.weight,
+        artwork: data.sprites.other['official-artwork'].front_default,
+        types: data.types.map((t) => t.type.name),
+        abilities: data.abilities.map((a) => a.ability.name),
+        stats: data.stats.map((s) => ({
+          name: s.stat.name,
+          value: s.base_stat,
+        })),
+      };
+
+      const entry = species.flavor_text_entries.find(
+        (e) => e.language.name === 'en',
+      );
+      // The API's flavor text is riddled with line-break control characters.
+      this.flavorText = entry
+        ? entry.flavor_text.replace(/[\n\f\r]+/g, ' ')
+        : '';
+    } catch {
+      this.error = `Could not load Pokémon #${pokemonId}.`;
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   <template>
     <div class="pokemon-detail" {{this.loadOnChange @pokemonId}}>
-      {{#if this.pokemon}}
+      {{#if this.isLoading}}
+        <p class="detail-loading">Loading Pokémon&hellip;</p>
+      {{else if this.error}}
+        <p class="detail-error">{{this.error}}</p>
+      {{else if this.pokemon}}
         <div class="detail-header">
           <img
             src={{this.pokemon.artwork}}
