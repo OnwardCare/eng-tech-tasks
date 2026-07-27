@@ -3,15 +3,11 @@ import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
 import { modifier } from 'ember-modifier';
-
-function idFromSpeciesUrl(url) {
-  const match = url.match(/\/(\d+)\/?$/);
-  return match ? Number(match[1]) : null;
-}
+import { idFromUrl } from 'pokedex-challenge/utils/pokemon';
 
 function buildTree(node) {
   return {
-    id: idFromSpeciesUrl(node.species.url),
+    id: idFromUrl(node.species.url),
     name: node.species.name,
     sprite: null,
     children: node.evolves_to.map(buildTree),
