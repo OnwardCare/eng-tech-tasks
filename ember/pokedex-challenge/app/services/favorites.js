@@ -1,11 +1,30 @@
 import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
 const STORAGE_KEY = 'pokedex-favorites';
 
 export default class FavoritesService extends Service {
   // Load persisted favorites from localStorage on init; default to empty array
   @tracked items = this._load();
+
+  constructor() {
+    super(...arguments);
+    window.addEventListener('storage', this._handleStorage);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    window.removeEventListener('storage', this._handleStorage);
+  }
+
+  @action
+  _handleStorage(event) {
+    if (event.key === STORAGE_KEY) {
+      // Re-load the items array when another tab changes the storage
+      this.items = this._load();
+    }
+  }
 
   get count() {
     return this.items.length;
