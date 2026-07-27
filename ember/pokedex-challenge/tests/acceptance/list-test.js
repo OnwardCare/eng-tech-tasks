@@ -1,5 +1,12 @@
 import { module, test } from 'qunit';
-import { visit, findAll, click, fillIn } from '@ember/test-helpers';
+import {
+  visit,
+  findAll,
+  click,
+  fillIn,
+  find,
+  settled,
+} from '@ember/test-helpers';
 import { setupApplicationTest } from 'pokedex-challenge/tests/helpers';
 
 module('Acceptance | list', function (hooks) {
@@ -60,5 +67,26 @@ module('Acceptance | list', function (hooks) {
 
     assert.strictEqual(findAll('.pokemon-card').length, 0);
     assert.dom('.empty-state').containsText('No Pokémon match');
+  });
+
+  test('rapid keystrokes are debounced to a single search for the final value', async function (assert) {
+    await visit('/');
+
+    // Dispatch native input events directly (bypassing the `fillIn` helper's
+    // own settling) so every keystroke lands before the debounce timer for
+    // the previous one has a chance to fire, the way a fast typist would.
+    const input = find('.search-input');
+    for (const partial of ['p', 'pi', 'pik', 'pika', 'pikachu']) {
+      input.value = partial;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    await settled();
+
+    assert.strictEqual(
+      findAll('.pokemon-card').length,
+      1,
+      'only the final search term was ever applied',
+    );
+    assert.dom('.pokemon-card .pokemon-name').hasText('pikachu');
   });
 });

@@ -98,6 +98,12 @@ a {
   margin-bottom: 1rem;
 }
 
+.list-loading {
+  color: #999;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
 .search-input {
   flex: 1;
   padding: 0.5rem 0.75rem;

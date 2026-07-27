@@ -3,22 +3,45 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { on } from '@ember/modifier';
+import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 import { toCardShape } from 'pokedex-challenge/utils/pokemon';
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 250;
+const searchWaiter = buildWaiter('pokedex-challenge:search-debounce');
 
 export default class PokemonList extends Component {
   @service pokeData;
 
+  // searchInput reflects every keystroke immediately so the field never
+  // feels laggy; searchTerm is the debounced value actually used to filter,
+  // since every filter change can trigger fetching a new page of details.
+  @tracked searchInput = '';
   @tracked searchTerm = '';
   @tracked sortBy = 'id';
   @tracked offset = 0;
   @tracked pageCards = [];
   @tracked isLoading = false;
   @tracked error = null;
+
+  #searchDebounceTimer;
+  #searchWaiterToken;
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    clearTimeout(this.#searchDebounceTimer);
+    this.#endSearchWait();
+  }
+
+  #endSearchWait() {
+    if (this.#searchWaiterToken !== undefined) {
+      searchWaiter.endAsync(this.#searchWaiterToken);
+      this.#searchWaiterToken = undefined;
+    }
+  }
 
   // args.pokemon is the full, lightweight { id, name } list for all of Gen 1
   // (see IndexRoute). Filtering/sorting happens over that whole set so
@@ -100,8 +123,20 @@ export default class PokemonList extends Component {
 
   @action
   updateSearch(event) {
-    this.searchTerm = event.target.value;
-    this.offset = 0;
+    this.searchInput = event.target.value;
+
+    clearTimeout(this.#searchDebounceTimer);
+    this.#endSearchWait();
+    this.#searchWaiterToken = searchWaiter.beginAsync();
+
+    this.#searchDebounceTimer = setTimeout(() => {
+      this.#endSearchWait();
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+      this.searchTerm = this.searchInput;
+      this.offset = 0;
+    }, SEARCH_DEBOUNCE_MS);
   }
 
   @action
@@ -135,7 +170,7 @@ export default class PokemonList extends Component {
         id="pokemon-search"
         type="text"
         placeholder="Search by name"
-        value={{this.searchTerm}}
+        value={{this.searchInput}}
         class="search-input"
         {{on "input" this.updateSearch}}
       />
@@ -149,6 +184,10 @@ export default class PokemonList extends Component {
         <option value="name">Sort by name</option>
       </select>
     </div>
+
+    {{#if this.isLoading}}
+      <p class="list-loading">Loading&hellip;</p>
+    {{/if}}
 
     {{#if this.error}}
       <p class="list-error">{{this.error}}</p>
