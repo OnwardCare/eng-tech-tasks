@@ -108,16 +108,22 @@ export default class PokemonList extends Component {
       );
 
       // Ignore a slower, now-stale page load resolving after the user has
-      // already paged/searched/sorted again.
-      if (pageKey !== this.pageKey) {
+      // already paged/searched/sorted again, or after the component has
+      // been torn down entirely (e.g. navigated away mid-fetch).
+      if (this.isDestroying || this.isDestroyed || pageKey !== this.pageKey) {
         return;
       }
 
       this.pageCards = details.map(toCardShape);
     } catch {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
       this.error = 'Could not load this page of Pokémon.';
     } finally {
-      this.isLoading = false;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.isLoading = false;
+      }
     }
   }
 

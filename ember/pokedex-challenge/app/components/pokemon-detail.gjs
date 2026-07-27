@@ -33,8 +33,13 @@ export default class PokemonDetail extends Component {
       ]);
 
       // Guard against a slower, now-stale request resolving after a newer
-      // one has already started (e.g. rapidly clicking evolution stages).
-      if (String(pokemonId) !== String(this.args.pokemonId)) {
+      // one has already started (e.g. rapidly clicking evolution stages),
+      // or after the component itself has been torn down entirely.
+      if (
+        this.isDestroying ||
+        this.isDestroyed ||
+        String(pokemonId) !== String(this.args.pokemonId)
+      ) {
         return;
       }
 
@@ -60,9 +65,14 @@ export default class PokemonDetail extends Component {
         ? entry.flavor_text.replace(/[\n\f\r]+/g, ' ')
         : '';
     } catch {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
       this.error = `Could not load Pokémon #${pokemonId}.`;
     } finally {
-      this.isLoading = false;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.isLoading = false;
+      }
     }
   }
 

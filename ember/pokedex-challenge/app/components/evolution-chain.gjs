@@ -74,11 +74,28 @@ export default class EvolutionChain extends Component {
         }),
       );
 
+      // Guard against a slower, now-stale chain resolving after the user has
+      // already navigated to a different Pokémon (e.g. clicking evolution
+      // links quickly), and against the component being torn down entirely
+      // while the fetch was still in flight.
+      if (
+        this.isDestroying ||
+        this.isDestroyed ||
+        String(pokemonId) !== String(this.args.pokemonId)
+      ) {
+        return;
+      }
+
       this.tree = tree;
     } catch {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
       this.error = 'Could not load the evolution chain.';
     } finally {
-      this.isLoading = false;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.isLoading = false;
+      }
     }
   }
 
