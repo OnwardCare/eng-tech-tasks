@@ -95,17 +95,22 @@ export default class PokemonList extends Component {
           const detail = await this.pokeData.fetchPokemon(
             entry.url.split('/').at(-2),
           );
-          return {
-            id: detail.id,
-            name: detail.name,
-            sprite: detail.sprites.front_default,
-            types: detail.types.map((t) => t.type.name),
-          };
+          return this._mapSummary(detail);
         }),
       );
     } finally {
       this.isLoadingAll = false;
     }
+  }
+
+  // Helper to map API response to the format expected by PokemonCard
+  _mapSummary(detail) {
+    return {
+      id: detail.id,
+      name: detail.name,
+      sprite: detail.sprites.front_default,
+      types: detail.types.map((t) => t.type.name),
+    };
   }
 
   @action
@@ -144,12 +149,7 @@ export default class PokemonList extends Component {
         const detail = await this.pokeData.fetchPokemon(
           entry.url.split('/').at(-2),
         );
-        return {
-          id: detail.id,
-          name: detail.name,
-          sprite: detail.sprites.front_default,
-          types: detail.types.map((t) => t.type.name),
-        };
+        return this._mapSummary(detail);
       }),
     );
   }
