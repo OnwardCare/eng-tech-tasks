@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -8,6 +7,7 @@ import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 
 const GEN_1_COUNT = 151;
+const PAGE_SIZE = 20;
 
 export default class PokemonList extends Component {
   @service pokeData;
@@ -29,9 +29,10 @@ export default class PokemonList extends Component {
       );
     }
     if (this.sortBy === 'name') {
-      return results.sort((a, b) => a.name.localeCompare(b.name));
+      // Sort on a copy to avoid mutating the cached page array
+      return [...results].sort((a, b) => a.name.localeCompare(b.name));
     }
-    return results.sort((a, b) => a.id - b.id);
+    return [...results].sort((a, b) => a.id - b.id);
   }
 
   @action
@@ -44,31 +45,48 @@ export default class PokemonList extends Component {
     this.sortBy = event.target.value;
   }
 
-  @action
-  async nextPage() {
-    if (this.offset + 20 >= GEN_1_COUNT) {
-      return;
-    }
-    this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
+  // Shared helper to fetch a page by offset; uses the service for caching
+  async _loadPage(offset) {
+    const limit = Math.min(PAGE_SIZE, GEN_1_COUNT - offset);
+    const list = await this.pokeData.fetchList(offset, limit);
+
+    // Fetch all Pokémon on this page in parallel
+    return Promise.all(
+      list.results.map(async (entry) => {
+        const detail = await this.pokeData.fetchPokemon(
+          entry.url.split('/').at(-2),
+        );
+        return {
+          id: detail.id,
+          name: detail.name,
+          sprite: detail.sprites.front_default,
+          types: detail.types.map((t) => t.type.name),
+        };
+      }),
+    );
   }
 
   @action
-  previousPage() {
-    console.log('previousPage');
+  async nextPage() {
+    if (this.offset + PAGE_SIZE >= GEN_1_COUNT) {
+      return;
+    }
+    this.offset = this.offset + PAGE_SIZE;
+    this.currentPage = await this._loadPage(this.offset);
+  }
+
+  @action
+  async previousPage() {
+    if (this.offset === 0) {
+      return;
+    }
+    this.offset = Math.max(0, this.offset - PAGE_SIZE);
+    // First page was loaded by the route; restore it from args to avoid a redundant request
+    if (this.offset === 0) {
+      this.currentPage = null;
+      return;
+    }
+    this.currentPage = await this._loadPage(this.offset);
   }
 
   <template>
