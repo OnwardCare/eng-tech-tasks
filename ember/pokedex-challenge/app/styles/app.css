@@ -287,3 +287,10 @@ a {
 .empty-state {
   color: #777;
 }
+
+.search-loading {
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.5rem 0;
+}
