@@ -23,6 +23,7 @@ export default class PokemonRoute extends Route {
       height: data.height,
       weight: data.weight,
       artwork: data.sprites.other['official-artwork'].front_default,
+      sprite: data.sprites.front_default,
       types: data.types.map((t) => t.type.name),
       abilities: data.abilities.map((a) => a.ability.name),
       stats: data.stats.map((s) => ({
