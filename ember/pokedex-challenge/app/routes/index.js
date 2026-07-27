@@ -6,17 +6,22 @@ export default class IndexRoute extends Route {
 
   async model() {
     const list = await this.pokeData.fetchList(0, 20);
-    const pokemon = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      pokemon.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
+
+    // Fetch all 20 Pokémon in parallel instead of sequentially — cuts load time proportionally
+    const pokemon = await Promise.all(
+      list.results.map(async (entry) => {
+        const detail = await this.pokeData.fetchPokemon(
+          entry.url.split('/').at(-2),
+        );
+        return {
+          id: detail.id,
+          name: detail.name,
+          sprite: detail.sprites.front_default,
+          types: detail.types.map((t) => t.type.name),
+        };
+      }),
+    );
+
     return pokemon;
   }
 }
