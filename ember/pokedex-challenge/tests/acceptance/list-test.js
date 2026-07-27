@@ -89,4 +89,18 @@ module('Acceptance | list', function (hooks) {
     );
     assert.dom('.pokemon-card .pokemon-name').hasText('pikachu');
   });
+
+  test('shows a friendly error state if the initial pokemon list fails to load', async function (assert) {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: false, json: async () => ({}) });
+
+    try {
+      await visit('/');
+
+      assert.dom('.route-error').exists();
+      assert.dom('.pokemon-grid').doesNotExist();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });

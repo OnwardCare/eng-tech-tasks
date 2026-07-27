@@ -104,6 +104,22 @@ a {
   margin: 0 0 1rem;
 }
 
+.route-loading {
+  text-align: center;
+  color: #999;
+  padding: 3rem 0;
+}
+
+.route-error {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.route-error p {
+  color: #b00020;
+  margin-bottom: 1rem;
+}
+
 .search-input {
   flex: 1;
   padding: 0.5rem 0.75rem;
