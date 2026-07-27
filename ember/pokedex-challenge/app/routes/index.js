@@ -1,14 +1,6 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
-
-function toCardShape(detail) {
-  return {
-    id: detail.id,
-    name: detail.name,
-    sprite: detail.sprites.front_default,
-    types: detail.types.map((t) => t.type.name),
-  };
-}
+import { toCardShape } from 'pokedex-challenge/utils/pokemon';
 
 export default class IndexRoute extends Route {
   @service pokeData;

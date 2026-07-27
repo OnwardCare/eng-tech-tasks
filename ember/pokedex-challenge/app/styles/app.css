@@ -84,6 +84,20 @@ a {
   margin-bottom: 1rem;
 }
 
+.search-label,
+.sort-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.list-error {
+  color: #b00020;
+  margin-bottom: 1rem;
+}
+
 .search-input {
   flex: 1;
   padding: 0.5rem 0.75rem;
@@ -113,12 +127,6 @@ a {
   border: 1px solid #e3e3e8;
   border-radius: 8px;
   text-align: center;
-}
-
-.pokemon-card .favorite-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
 }
 
 .pokemon-sprite {
@@ -164,6 +172,12 @@ a {
   color: #f5b942;
 }
 
+.pokemon-card .favorite-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -178,6 +192,11 @@ a {
   background: #fff;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.page-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .pokemon-detail {

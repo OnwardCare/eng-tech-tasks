@@ -1,4 +1,5 @@
 import Service from '@ember/service';
+import { waitForPromise } from '@ember/test-waiters';
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
@@ -25,7 +26,10 @@ export default class PokeDataService extends Service {
     this.#cache.set(cacheKey, promise);
     promise.catch(() => this.#cache.delete(cacheKey));
 
-    return promise;
+    // Registers the request as a test waiter so `click`/`visit`/`render`
+    // test helpers correctly wait for it to settle, since raw fetch()
+    // calls aren't tracked by Ember's run loop on their own.
+    return waitForPromise(promise);
   }
 
   fetchList(offset = 0, limit = 20) {
