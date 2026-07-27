@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { on } from '@ember/modifier';
@@ -7,17 +6,14 @@ import { on } from '@ember/modifier';
 export default class FavoriteButton extends Component {
   @service favorites;
 
-  @tracked isFavorite;
-
-  constructor() {
-    super(...arguments);
-    this.isFavorite = this.favorites.isFavorite(this.args.pokemon.id);
+  // Derive state from the service — avoids local state that can drift out of sync
+  get isFavorite() {
+    return this.favorites.isFavorite(this.args.pokemon.id);
   }
 
   @action
   toggle() {
     this.favorites.toggle(this.args.pokemon);
-    this.isFavorite = !this.isFavorite;
   }
 
   <template>

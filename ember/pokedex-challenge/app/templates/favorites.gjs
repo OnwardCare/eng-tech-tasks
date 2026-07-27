@@ -6,9 +6,10 @@ import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 
   <h1>Favorites</h1>
 
-  {{#if @model.length}}
+  {{! Read from the controller's service ref so the list reacts to toggles immediately }}
+  {{#if this.favorites.items.length}}
     <div class="pokemon-grid">
-      {{#each @model as |pokemon|}}
+      {{#each this.favorites.items as |pokemon|}}
         <PokemonCard @pokemon={{pokemon}} />
       {{/each}}
     </div>
