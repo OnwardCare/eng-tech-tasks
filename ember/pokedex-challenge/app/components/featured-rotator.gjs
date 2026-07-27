@@ -1,28 +1,47 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
 
+const GEN_1_COUNT = 151;
+const ROTATE_EVERY = 8000;
+
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
+
+  #timer;
 
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
-      this.loadFeatured();
-    }, 8000);
+    this.#timer = setInterval(() => this.loadFeatured(), ROTATE_EVERY);
+  }
+
+  willDestroy() {
+    clearInterval(this.#timer);
+    super.willDestroy(...arguments);
   }
 
   async loadFeatured() {
-    const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
+    const id = Math.floor(Math.random() * GEN_1_COUNT) + 1;
+
+    try {
+      const data = await this.pokeData.fetchPokemon(id);
+
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
+      this.featured = {
+        id: data.id,
+        name: data.name,
+        sprite: data.sprites.other['official-artwork'].front_default,
+      };
+    } catch {
+      // A failed rotation just leaves the current pokemon in place.
+    }
   }
 
   <template>

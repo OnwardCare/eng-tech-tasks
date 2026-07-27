@@ -1,30 +1,40 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached } from '@glimmer/tracking';
+import { service } from '@ember/service';
+import AsyncData from 'pokedex-challenge/utils/async-data';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 export default class PokemonDetail extends Component {
-  @tracked pokemon = null;
-  @tracked flavorText = '';
+  @service pokeData;
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
+  @cached
+  get pokemonData() {
+    const pokemonId = this.args.pokemonId;
+    return new AsyncData(() => this.pokeData.fetchPokemon(pokemonId));
   }
 
-  async loadPokemon() {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
-    );
-    const data = await response.json();
-    console.log('loaded pokemon', data.name);
-    this.pokemon = {
+  @cached
+  get speciesData() {
+    const pokemonId = this.args.pokemonId;
+    return new AsyncData(() => this.pokeData.fetchSpecies(pokemonId));
+  }
+
+  get pokemon() {
+    const data = this.pokemonData.value;
+
+    if (!data) {
+      return null;
+    }
+
+    return {
       id: data.id,
       name: data.name,
       height: data.height,
       weight: data.weight,
       artwork: data.sprites.other['official-artwork'].front_default,
+      sprite: data.sprites.front_default,
       types: data.types.map((t) => t.type.name),
       abilities: data.abilities.map((a) => a.ability.name),
       stats: data.stats.map((s) => ({
@@ -32,14 +42,14 @@ export default class PokemonDetail extends Component {
         value: s.base_stat,
       })),
     };
-    const speciesResponse = await fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${data.id}`,
-    );
-    const species = await speciesResponse.json();
-    const entry = species.flavor_text_entries.find(
+  }
+
+  get flavorText() {
+    const entry = this.speciesData.value?.flavor_text_entries.find(
       (e) => e.language.name === 'en',
     );
-    this.flavorText = entry ? entry.flavor_text : '';
+
+    return entry ? entry.flavor_text.replace(/\s+/g, ' ') : '';
   }
 
   <template>
@@ -64,7 +74,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>
@@ -95,6 +107,10 @@ export default class PokemonDetail extends Component {
           <h2>Evolution chain</h2>
           <EvolutionChain @pokemonId={{this.pokemon.id}} />
         </section>
+      {{else if this.pokemonData.error}}
+        <p class="detail-status">Could not load this Pokémon.</p>
+      {{else}}
+        <p class="detail-status">Loading…</p>
       {{/if}}
     </div>
   </template>
