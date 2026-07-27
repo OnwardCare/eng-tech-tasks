@@ -108,6 +108,26 @@ git log for the full breakdown. Summary of what changed and why:
   the page); `filteredPokemon` sorted the source array in place instead of
   a copy; removed an unused, dead `@warp-drive` store service left over
   from the scaffold.
+- **Debounced search + loading feedback.** Every keystroke re-filtered the
+  full list and could kick off a fresh burst of detail fetches for the
+  newly-visible page, even mid-typing. Search now debounces 250ms after
+  the last keystroke (via a manual `setTimeout` registered with
+  `@ember/test-waiters` rather than `@ember/runloop`, per this project's
+  lint rules) before it's applied, and the grid now surfaces a small
+  "Loading…" indicator while a page's details are in flight, since
+  `isLoading` existed but was never rendered.
+- **Stale-response and post-destroy guards.** `pokemon-detail` and
+  `pokemon-list` already ignored a slower request that resolved after a
+  newer one started; `evolution-chain` didn't have that guard at all, so
+  clicking through evolution stages quickly could show the wrong chain.
+  Added the same guard there, plus `isDestroying`/`isDestroyed` checks
+  across all three so navigating away mid-fetch can't throw trying to
+  update a torn-down component.
+- **Route-level loading/error substates.** The index route's `model()`
+  awaits a network request before the transition completes; with no
+  `loading`/`error` templates, a slow request left the page blank and a
+  failed one fell back to Ember's default, unstyled error page. Added
+  both substates, styled to match the app.
 
 **Known trade-offs / what I'd do with more time:**
 
