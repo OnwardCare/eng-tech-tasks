@@ -1,7 +1,8 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 
 export default class FavoritesService extends Service {
-  items = [];
+  @tracked items = [];
 
   get count() {
     return this.items.length;
@@ -12,14 +13,14 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    if (this.isFavorite(pokemon.id)) {
+      return;
+    }
+    this.items = [...this.items, pokemon];
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    this.items = this.items.filter((item) => item.id !== id);
   }
 
   toggle(pokemon) {
