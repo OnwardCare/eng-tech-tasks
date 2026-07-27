@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
@@ -8,17 +9,19 @@ export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
-  }
+  // Ember reuses this component instance when navigating between
+  // /pokemon/:id routes with a different id (the outlet doesn't tear
+  // down), so a constructor-only load left the page stuck on stale
+  // data. This modifier re-runs whenever @pokemonId changes.
+  loadOnChange = modifier((_element, [pokemonId]) => {
+    this.loadPokemon(pokemonId);
+  });
 
-  async loadPokemon() {
+  async loadPokemon(pokemonId) {
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
+      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
     );
     const data = await response.json();
-    console.log('loaded pokemon', data.name);
     this.pokemon = {
       id: data.id,
       name: data.name,
@@ -43,7 +46,7 @@ export default class PokemonDetail extends Component {
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" {{this.loadOnChange @pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
@@ -64,7 +67,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>
