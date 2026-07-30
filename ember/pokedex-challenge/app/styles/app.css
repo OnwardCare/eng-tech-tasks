@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -113,6 +113,10 @@ a {
   border: 1px solid #e3e3e8;
   border-radius: 8px;
   text-align: center;
+}
+
+.pokemon-card.is-highlighted {
+  border: 2px solid #fcba03;
 }
 
 .pokemon-card .favorite-button {
@@ -256,6 +260,25 @@ a {
   border-radius: 6px;
   color: #999;
   text-align: center;
+}
+
+.evolution-placeholder .pokemon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.evolution-stage {
+  flex: 0 1 180px;
+  min-width: 0;
+}
+
+.evolution-arrow {
+  width: 20px;
+  flex: 0 0 20px;
+  text-align: center;
+  line-height: 1;
 }
 
 .empty-state {
