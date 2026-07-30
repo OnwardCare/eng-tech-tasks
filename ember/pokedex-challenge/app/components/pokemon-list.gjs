@@ -6,23 +6,30 @@ import { service } from '@ember/service';
 import { on } from '@ember/modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
-
-const GEN_1_COUNT = 151;
+import {
+  PAGE_SIZE,
+  API_POKEMON_LIMIT,
+} from 'pokedex-challenge/services/poke-data';
 
 export default class PokemonList extends Component {
   @service pokeData;
+  @service listState;
 
   @tracked searchTerm = '';
   @tracked sortBy = 'id';
-  @tracked offset = 0;
   @tracked currentPage = null;
+  @tracked isLoading = false;
+
+  get offset() {
+    return this.listState.offset;
+  }
 
   get pokemon() {
     return this.currentPage || this.args.pokemon;
   }
 
   get filteredPokemon() {
-    let results = this.pokemon;
+    let results = this.pokemon ?? [];
     if (this.searchTerm) {
       results = results.filter((p) =>
         p.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
@@ -44,31 +51,47 @@ export default class PokemonList extends Component {
     this.sortBy = event.target.value;
   }
 
-  @action
-  async nextPage() {
-    if (this.offset + 20 >= GEN_1_COUNT) {
-      return;
+  async loadPage(offset) {
+    this.isLoading = true;
+    try {
+      this.listState.offset = offset;
+      const limit = Math.min(PAGE_SIZE, API_POKEMON_LIMIT - offset);
+      const list = await this.pokeData.fetchList(offset, limit);
+      const page = [];
+      for (const entry of list.results) {
+        const response = await fetch(entry.url);
+        const detail = await response.json();
+        page.push({
+          id: detail.id,
+          name: detail.name,
+          sprite: detail.sprites.front_default,
+          types: detail.types.map((t) => t.type.name),
+        });
+      }
+      this.currentPage = page;
+    } finally {
+      this.isLoading = false;
     }
-    this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
   }
 
   @action
-  previousPage() {
-    console.log('previousPage');
+  async nextPage() {
+    if (this.isLoading || this.offset + PAGE_SIZE >= API_POKEMON_LIMIT) {
+      return;
+    }
+    await this.loadPage(this.offset + PAGE_SIZE);
+  }
+
+  @action
+  async previousPage() {
+    if (this.isLoading || this.offset <= 0) {
+      return;
+    }
+    await this.loadPage(this.offset - PAGE_SIZE);
+  }
+
+  get isPreviousDisabled() {
+    return this.isLoading || this.offset <= 0;
   }
 
   <template>
@@ -88,21 +111,31 @@ export default class PokemonList extends Component {
       </select>
     </div>
 
-    <div class="pokemon-grid">
-      {{#each this.filteredPokemon as |pokemon|}}
-        <PokemonCard @pokemon={{pokemon}} />
-      {{/each}}
-    </div>
+    {{#if this.isLoading}}
+      <div class="list-loading">Loading Pokémons...</div>
+    {{else}}
+      <div class="pokemon-grid">
+        {{#each this.filteredPokemon as |pokemon|}}
+          <PokemonCard @pokemon={{pokemon}} />
+        {{/each}}
+      </div>
+    {{/if}}
 
     <div class="pagination">
       <button
         type="button"
         class="page-button"
+        disabled={{this.isPreviousDisabled}}
         {{on "click" this.previousPage}}
       >
         Previous
       </button>
-      <button type="button" class="page-button" {{on "click" this.nextPage}}>
+      <button
+        type="button"
+        class="page-button"
+        disabled={{this.isLoading}}
+        {{on "click" this.nextPage}}
+      >
         Next
       </button>
     </div>

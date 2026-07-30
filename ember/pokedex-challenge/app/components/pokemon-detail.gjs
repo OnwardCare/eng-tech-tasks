@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { modifier } from 'ember-modifier';
+import { LinkTo } from '@ember/routing';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
@@ -46,6 +47,8 @@ export default class PokemonDetail extends Component {
 
   <template>
     <div class="pokemon-detail" {{this.loadOnIdChange @pokemonId}}>
+      <LinkTo @route="index" class="back-link">← Back to list</LinkTo>
+
       {{#if this.pokemon}}
         <div class="detail-header">
           <img

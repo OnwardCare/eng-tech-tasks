@@ -191,6 +191,17 @@ a {
   padding: 1.5rem;
 }
 
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #d53b47;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
 .detail-header {
   display: flex;
   gap: 1.5rem;
@@ -283,4 +294,15 @@ a {
 
 .empty-state {
   color: #777;
+}
+
+.list-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #777;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
