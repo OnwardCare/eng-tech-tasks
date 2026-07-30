@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'pokedex-challenge/tests/helpers';
-import { render, click, waitFor } from '@ember/test-helpers';
+import { render, click, waitFor, settled } from '@ember/test-helpers';
+import { tracked } from '@glimmer/tracking';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 const bulbasaurSpecies = {
@@ -42,6 +43,14 @@ const dittoSpecies = {
   id: 132,
   name: 'ditto',
   evolution_chain: null,
+};
+
+const ivysaurSpecies = {
+  id: 2,
+  name: 'ivysaur',
+  evolution_chain: {
+    url: 'https://pokeapi.co/api/v2/evolution-chain/1/',
+  },
 };
 
 module('Integration | Component | evolution-chain', function (hooks) {
@@ -175,5 +184,44 @@ module('Integration | Component | evolution-chain', function (hooks) {
 
     assert.dom('.evolution-none').hasText('This Pokémon does not evolve.');
     assert.dom('.evolution-line').doesNotExist();
+  });
+
+  test('reloads the chain when @pokemonId changes (STORY-04 regression)', async function (assert) {
+    this.mockSuccess({
+      'https://pokeapi.co/api/v2/pokemon-species/1': bulbasaurSpecies,
+      'https://pokeapi.co/api/v2/evolution-chain/1/': bulbasaurChain,
+      'https://pokeapi.co/api/v2/pokemon-species/2': ivysaurSpecies,
+    });
+
+    class State {
+      @tracked pokemonId = 1;
+    }
+    const state = new State();
+
+    await render(
+      <template><EvolutionChain @pokemonId={{state.pokemonId}} /></template>,
+    );
+    await waitFor('.evolution-line');
+
+    let links = [...document.querySelectorAll('.evolution-link')].map((el) =>
+      el.textContent.trim(),
+    );
+    assert.deepEqual(links, ['bulbasaur', 'ivysaur', 'venusaur']);
+
+    // Simulate navigating from /pokemon/1 to /pokemon/2 without the
+    // component instance being destroyed (same behavior as clicking an
+    // evolution link, which reuses the same component instance).
+    state.pokemonId = 2;
+    await settled();
+    await waitFor('.evolution-line');
+
+    links = [...document.querySelectorAll('.evolution-link')].map((el) =>
+      el.textContent.trim(),
+    );
+    assert.deepEqual(
+      links,
+      ['bulbasaur', 'ivysaur', 'venusaur'],
+      'refetches for the new pokemonId (same chain, from ivysaur species lookup)',
+    );
   });
 });

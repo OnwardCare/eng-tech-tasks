@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { on } from '@ember/modifier';
+import { modifier } from 'ember-modifier';
 import { LinkTo } from '@ember/routing';
 
 export default class EvolutionChain extends Component {
@@ -12,19 +13,22 @@ export default class EvolutionChain extends Component {
   @tracked isLoading = false;
   @tracked hasError = false;
 
-  constructor() {
-    super(...arguments);
-    this.loadChain();
-  }
+  // Glimmer component constructors only run once per component instance.
+  // Ember reuses the same EvolutionChain instance when navigating between
+  // /pokemon/:id routes (e.g. clicking an evolution stage link), so loading
+  // data in the constructor would leave the previous Pokémon's chain on
+  // screen. This functional modifier re-runs automatically whenever
+  // @pokemonId changes, keeping the chain in sync with the current Pokémon.
+  loadOnIdChange = modifier((element, [pokemonId]) => {
+    this.loadChain(pokemonId);
+  });
 
   @action
-  async loadChain() {
+  async loadChain(pokemonId = this.args.pokemonId) {
     this.isLoading = true;
     this.hasError = false;
 
-    const result = await this.evolutionChain.fetchEvolutionChain(
-      this.args.pokemonId,
-    );
+    const result = await this.evolutionChain.fetchEvolutionChain(pokemonId);
 
     if (result === null) {
       this.hasError = true;
@@ -34,6 +38,13 @@ export default class EvolutionChain extends Component {
     }
 
     this.isLoading = false;
+  }
+
+  // Separate from loadChain so the click event isn't accidentally passed
+  // through as the pokemonId argument.
+  @action
+  retry() {
+    this.loadChain(this.args.pokemonId);
   }
 
   get stagesWithMeta() {
@@ -48,7 +59,7 @@ export default class EvolutionChain extends Component {
   }
 
   <template>
-    <div class="evolution-chain">
+    <div class="evolution-chain" {{this.loadOnIdChange @pokemonId}}>
       {{#if this.isLoading}}
         <div class="evolution-loading" role="status" aria-live="polite">
           <span class="spinner" aria-hidden="true"></span>
@@ -60,7 +71,7 @@ export default class EvolutionChain extends Component {
           <button
             type="button"
             class="evolution-retry"
-            {{on "click" this.loadChain}}
+            {{on "click" this.retry}}
           >
             Retry
           </button>
