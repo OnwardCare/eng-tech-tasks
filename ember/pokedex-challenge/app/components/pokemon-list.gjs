@@ -68,7 +68,25 @@ export default class PokemonList extends Component {
 
   @action
   previousPage() {
-    console.log('previousPage');
+    if (this.offset === 0) {
+      return;
+    }
+    this.offset = Math.max(0, this.offset - 20);
+    const limit = Math.min(20, GEN_1_COUNT - this.offset);
+    this.pokeData.fetchList(this.offset, limit).then(async (list) => {
+      const page = [];
+      for (const entry of list.results) {
+        const response = await fetch(entry.url);
+        const detail = await response.json();
+        page.push({
+          id: detail.id,
+          name: detail.name,
+          sprite: detail.sprites.front_default,
+          types: detail.types.map((t) => t.type.name),
+        });
+      }
+      this.currentPage = page;
+    });
   }
 
   <template>
