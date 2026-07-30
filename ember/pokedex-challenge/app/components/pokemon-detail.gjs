@@ -12,44 +12,61 @@ export default class PokemonDetail extends Component {
 
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked isLoading = false;
+  @tracked error = null;
 
   loadOnIdChange = modifier((_element, [pokemonId]) => {
     this.loadPokemon(pokemonId);
   });
 
   async loadPokemon(pokemonId) {
-    const data = await this.pokeData.fetchPokemon(pokemonId);
+    this.isLoading = true;
+    this.error = null;
+    this.pokemon = null;
+    this.flavorText = '';
 
-    console.log('loaded pokemon', data.name);
-    this.pokemon = {
-      id: data.id,
-      name: data.name,
-      height: data.height,
-      weight: data.weight,
-      sprite: data.sprites.front_default, // Map sprite URL explicitly so PokemonCard can render the image on the /favorites page
-      artwork: data.sprites.other['official-artwork'].front_default,
-      types: data.types.map((t) => t.type.name),
-      abilities: data.abilities.map((a) => a.ability.name),
-      stats: data.stats.map((s) => ({
-        name: s.stat.name,
-        value: s.base_stat,
-      })),
-    };
-    const speciesResponse = await fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${data.id}`,
-    );
-    const species = await speciesResponse.json();
-    const entry = species.flavor_text_entries.find(
-      (e) => e.language.name === 'en',
-    );
-    this.flavorText = entry ? entry.flavor_text : '';
+    try {
+      const data = await this.pokeData.fetchPokemon(pokemonId);
+
+      console.log('loaded pokemon', data.name);
+      this.pokemon = {
+        id: data.id,
+        name: data.name,
+        height: data.height,
+        weight: data.weight,
+        sprite: data.sprites.front_default, // Map sprite URL explicitly so PokemonCard can render the image on the /favorites page
+        artwork: data.sprites.other['official-artwork'].front_default,
+        types: data.types.map((t) => t.type.name),
+        abilities: data.abilities.map((a) => a.ability.name),
+        stats: data.stats.map((s) => ({
+          name: s.stat.name,
+          value: s.base_stat,
+        })),
+      };
+
+      const species = await this.pokeData.fetchSpecies(data.id);
+      const entry = species.flavor_text_entries.find(
+        (e) => e.language.name === 'en',
+      );
+      this.flavorText = entry ? entry.flavor_text : '';
+    } catch (err) {
+      this.error = err.message || 'Failed to load Pokemon';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   <template>
     <div class="pokemon-detail" {{this.loadOnIdChange @pokemonId}}>
       <LinkTo @route="index" class="back-link">← Back to list</LinkTo>
 
-      {{#if this.pokemon}}
+      {{#if this.isLoading}}
+        <div class="list-loading">Loading Pokemon...</div>
+      {{else if this.error}}
+        <div class="error-state" role="alert">
+          <p>{{this.error}}</p>
+        </div>
+      {{else if this.pokemon}}
         <div class="detail-header">
           <img
             src={{this.pokemon.artwork}}

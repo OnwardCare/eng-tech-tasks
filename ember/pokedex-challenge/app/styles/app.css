@@ -292,6 +292,20 @@ a {
   line-height: 1;
 }
 
+.evolution-error,
+.error-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: #a33;
+  background: #fff5f5;
+  border: 1px solid #f0c2c2;
+  border-radius: 8px;
+}
+
+.error-state .page-button {
+  margin-top: 0.75rem;
+}
+
 .empty-state {
   color: #777;
 }

@@ -19,6 +19,7 @@ export default class PokemonList extends Component {
   @tracked sortBy = 'id';
   @tracked currentPage = null;
   @tracked isLoading = false;
+  @tracked error = null;
 
   get offset() {
     return this.listState.offset;
@@ -53,22 +54,14 @@ export default class PokemonList extends Component {
 
   async loadPage(offset) {
     this.isLoading = true;
+    this.error = null;
     try {
-      this.listState.offset = offset;
       const limit = Math.min(PAGE_SIZE, API_POKEMON_LIMIT - offset);
-      const list = await this.pokeData.fetchList(offset, limit);
-      const page = [];
-      for (const entry of list.results) {
-        const response = await fetch(entry.url);
-        const detail = await response.json();
-        page.push({
-          id: detail.id,
-          name: detail.name,
-          sprite: detail.sprites.front_default,
-          types: detail.types.map((t) => t.type.name),
-        });
-      }
+      const page = await this.pokeData.fetchPokemonPage(offset, limit);
+      this.listState.offset = offset;
       this.currentPage = page;
+    } catch (err) {
+      this.error = err.message || 'Failed to load Pokémon';
     } finally {
       this.isLoading = false;
     }
@@ -90,8 +83,17 @@ export default class PokemonList extends Component {
     await this.loadPage(this.offset - PAGE_SIZE);
   }
 
+  @action
+  retry() {
+    this.loadPage(this.offset);
+  }
+
   get isPreviousDisabled() {
     return this.isLoading || this.offset <= 0;
+  }
+
+  get isNextDisabled() {
+    return this.isLoading || this.offset + PAGE_SIZE >= API_POKEMON_LIMIT;
   }
 
   <template>
@@ -112,7 +114,14 @@ export default class PokemonList extends Component {
     </div>
 
     {{#if this.isLoading}}
-      <div class="list-loading">Loading Pokémons...</div>
+      <div class="list-loading">Loading Pokémon...</div>
+    {{else if this.error}}
+      <div class="error-state" role="alert">
+        <p>{{this.error}}</p>
+        <button type="button" class="page-button" {{on "click" this.retry}}>
+          Try again
+        </button>
+      </div>
     {{else}}
       <div class="pokemon-grid">
         {{#each this.filteredPokemon as |pokemon|}}
@@ -133,7 +142,7 @@ export default class PokemonList extends Component {
       <button
         type="button"
         class="page-button"
-        disabled={{this.isLoading}}
+        disabled={{this.isNextDisabled}}
         {{on "click" this.nextPage}}
       >
         Next
