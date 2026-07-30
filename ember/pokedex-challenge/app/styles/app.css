@@ -115,12 +115,6 @@ a {
   text-align: center;
 }
 
-.pokemon-card .favorite-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-}
-
 .pokemon-sprite {
   width: 96px;
   height: 96px;
@@ -158,6 +152,12 @@ a {
   cursor: pointer;
   color: #bbb;
   line-height: 1;
+}
+
+.pokemon-card .favorite-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 .favorite-button.is-favorite {

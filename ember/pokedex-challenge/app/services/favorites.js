@@ -9,7 +9,7 @@ export default class FavoritesService extends Service {
     try {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -17,7 +17,7 @@ export default class FavoritesService extends Service {
   saveFavorites() {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.items));
-    } catch (e) {
+    } catch {
       // Handle error if needed
     }
   }

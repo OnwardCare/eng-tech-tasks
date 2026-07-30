@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -97,10 +96,11 @@ export default class PokemonList extends Component {
         type="text"
         placeholder="Search by name"
         value={{this.searchTerm}}
+        aria-label="Search Pokémon by name"
         class="search-input"
         {{on "input" this.updateSearch}}
       />
-      <select class="sort-select" {{on "change" this.updateSort}}>
+      <select class="sort-select" {{on "change" this.updateSort}} aria-label="Sort Pokémon">
         <option value="id">Sort by ID</option>
         <option value="name">Sort by name</option>
       </select>
