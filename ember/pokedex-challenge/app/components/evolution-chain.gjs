@@ -54,15 +54,10 @@ export default class EvolutionChainComponent extends Component {
       return;
     }
 
-    console.log('Fetching evolution chain from URL:', url);
-
     try {
       const chain = await this.pokeData.fetchEvolutionChain(url);
-      console.log({chain})
       this.evolutions = evolutionChainToArray(chain.chain);
-      console.log({evolutions: this.evolutions})
     } catch (e) {
-      console.log('Error loading evolution chain:', e);
       this.error = e;
     } finally {
       this.isLoading = false;
