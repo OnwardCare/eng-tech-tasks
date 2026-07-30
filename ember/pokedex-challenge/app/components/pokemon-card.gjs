@@ -3,7 +3,7 @@ import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 
 <template>
-  <div class="pokemon-card">
+  <div class="pokemon-card" data-test-pokemon-card>
     <FavoriteButton @pokemon={{@pokemon}} />
     <LinkTo @route="pokemon" @model={{@pokemon.id}} class="pokemon-link">
       <img src={{@pokemon.sprite}} alt={{@pokemon.name}} class="pokemon-sprite" />
