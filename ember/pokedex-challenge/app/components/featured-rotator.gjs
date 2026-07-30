@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { registerDestructor } from '@ember/destroyable';
 import { LinkTo } from '@ember/routing';
 
 export default class FeaturedRotator extends Component {
@@ -9,15 +9,19 @@ export default class FeaturedRotator extends Component {
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       this.loadFeatured();
     }, 8000);
+    registerDestructor(this, () => clearInterval(intervalId));
   }
 
   async loadFeatured() {
     const id = Math.floor(Math.random() * 151) + 1;
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     const data = await response.json();
+    if (this.isDestroying || this.isDestroyed) {
+      return;
+    }
     this.featured = {
       id: data.id,
       name: data.name,
