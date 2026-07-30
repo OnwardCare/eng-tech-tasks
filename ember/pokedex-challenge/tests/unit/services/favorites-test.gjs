@@ -66,4 +66,26 @@ module('Unit | Service | favorites', function (hooks) {
     assert.strictEqual(favorites.count, 1);
     assert.true(favorites.isFavorite(25));
   });
+
+  test('normalizes a detail-page-shaped pokemon (artwork, no sprite) so cards can render an image', function (assert) {
+    const favorites = this.owner.lookup('service:favorites');
+    const detailShaped = {
+      id: 6,
+      name: 'charizard',
+      height: 17,
+      weight: 905,
+      artwork: 'https://example.test/charizard-artwork.png',
+      types: ['fire', 'flying'],
+      abilities: ['blaze'],
+      stats: [],
+    };
+
+    favorites.add(detailShaped);
+
+    assert.strictEqual(
+      favorites.items[0].sprite,
+      'https://example.test/charizard-artwork.png',
+      'falls back to artwork when no sprite is present, so PokemonCard has an image to render',
+    );
+  });
 });

@@ -24,7 +24,15 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items = [...this.items, pokemon];
+    this.items = [
+      ...this.items,
+      {
+        id: pokemon.id,
+        name: pokemon.name,
+        sprite: pokemon.sprite ?? pokemon.artwork,
+        types: pokemon.types,
+      },
+    ];
     this.persist();
   }
 
