@@ -1,7 +1,10 @@
 import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 
 export default class FavoritesService extends Service {
+  @service('poke-data') pokeData;
+
   @tracked items = [];
 
   #localStorageKey = 'pokedex-favorites';
@@ -63,6 +66,32 @@ export default class FavoritesService extends Service {
     } catch (e) {
       // localStorage unavailable or quota exceeded; silently ignore
       console.warn('Failed to sync favorites to localStorage:', e);
+    }
+  }
+
+  /**
+   * Lazy-load full Pokemon objects for favorite IDs that don't have objects yet
+   * Called by /favorites route to ensure all pokemon are loaded
+   * @async
+   */
+  async preloadFavoritesIfNeeded() {
+    const missingIds = Array.from(this._favoriteIds).filter(
+      (id) => !this.items.some((p) => p.id === id),
+    );
+
+    if (missingIds.length === 0) {
+      return;
+    }
+
+    for (const id of missingIds) {
+      try {
+        const pokemon = await this.pokeData.fetchPokemon(id);
+        if (pokemon && !this.items.some((p) => p.id === id)) {
+          this.items.push(pokemon);
+        }
+      } catch (e) {
+        console.warn(`Failed to load pokemon ${id} for favorites:`, e);
+      }
     }
   }
 
