@@ -9,7 +9,7 @@ export default class NavBar extends Component {
     <nav class="main-nav">
       <LinkTo @route="index" class="nav-brand">Pokédex</LinkTo>
       <LinkTo @route="favorites" class="nav-favorites">
-        Favorites ({{this.favorites.count}})
+        Favorites (<span data-test-nav-favorites-count>{{this.favorites.count}}</span>)
       </LinkTo>
     </nav>
   </template>

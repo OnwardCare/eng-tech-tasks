@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -250,12 +250,109 @@ a {
   color: #666;
 }
 
-.evolution-placeholder {
+.evolution-chain {
+  padding: 0.5rem 0;
+}
+
+.evolution-loading,
+.evolution-error,
+.evolution-none {
   padding: 1rem;
   border: 1px dashed #ccc;
   border-radius: 6px;
-  color: #999;
+  color: #555;
   text-align: center;
+}
+
+.evolution-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #ccc;
+  border-top-color: #d53b47;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.evolution-error {
+  border-color: #d53b47;
+  color: #d53b47;
+}
+
+.evolution-error p {
+  margin: 0 0 0.5rem;
+}
+
+.evolution-retry {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #d53b47;
+  background: #fff;
+  color: #d53b47;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.evolution-retry:hover,
+.evolution-retry:focus {
+  background: #d53b47;
+  color: #fff;
+}
+
+.evolution-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.evolution-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.evolution-link {
+  padding: 0.35rem 0.75rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-transform: capitalize;
+  color: #222;
+  font-weight: 500;
+}
+
+.evolution-link:hover,
+.evolution-link:focus {
+  background: #f9e6e8;
+  border-color: #d53b47;
+  color: #d53b47;
+}
+
+.evolution-arrow {
+  color: #888;
+  font-weight: 700;
+}
+
+.evolution-none {
+  color: #777;
+  font-style: italic;
 }
 
 .empty-state {

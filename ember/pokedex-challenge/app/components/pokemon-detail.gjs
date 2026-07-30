@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
@@ -8,17 +9,26 @@ export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
-  }
+  // Glimmer component constructors only run once per component instance.
+  // Ember reuses the same PokemonDetail instance when navigating between
+  // /pokemon/:id routes (e.g. via evolution chain links), so loading data
+  // in the constructor would leave stale content on the screen. This
+  // functional modifier re-runs automatically whenever @pokemonId changes,
+  // keeping the detail page in sync with the current route.
+  loadOnIdChange = modifier((element, [pokemonId]) => {
+    this.loadPokemon(pokemonId);
+  });
 
-  async loadPokemon() {
+  async loadPokemon(pokemonId = this.args.pokemonId) {
+    // Reset state before fetching so stale data from the previous
+    // Pokémon doesn't remain visible while the new data loads.
+    this.pokemon = null;
+    this.flavorText = '';
+
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
+      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
     );
     const data = await response.json();
-    console.log('loaded pokemon', data.name);
     this.pokemon = {
       id: data.id,
       name: data.name,
@@ -43,7 +53,7 @@ export default class PokemonDetail extends Component {
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" {{this.loadOnIdChange @pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
@@ -64,7 +74,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>
