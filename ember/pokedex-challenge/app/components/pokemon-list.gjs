@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -8,6 +7,7 @@ import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 
 const GEN_1_COUNT = 151;
+const PAGE_SIZE = 20;
 
 export default class PokemonList extends Component {
   @service pokeData;
@@ -16,9 +16,17 @@ export default class PokemonList extends Component {
   @tracked sortBy = 'id';
   @tracked offset = 0;
   @tracked currentPage = null;
+  @tracked isLoading = false;
+
+  pageCache = new Map();
+
+  constructor() {
+    super(...arguments);
+    this.pageCache.set(0, this.args.pokemon);
+  }
 
   get pokemon() {
-    return this.currentPage || this.args.pokemon;
+    return this.currentPage ?? this.args.pokemon;
   }
 
   get filteredPokemon() {
@@ -34,6 +42,14 @@ export default class PokemonList extends Component {
     return results.sort((a, b) => a.id - b.id);
   }
 
+  get isFirstPage() {
+    return this.offset === 0;
+  }
+
+  get isLastPage() {
+    return this.offset + PAGE_SIZE >= GEN_1_COUNT;
+  }
+
   @action
   updateSearch(event) {
     this.searchTerm = event.target.value;
@@ -45,30 +61,42 @@ export default class PokemonList extends Component {
   }
 
   @action
-  async nextPage() {
-    if (this.offset + 20 >= GEN_1_COUNT) {
+  nextPage() {
+    if (this.isLastPage) {
       return;
     }
-    this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
+    this.goToOffset(this.offset + PAGE_SIZE);
   }
 
   @action
   previousPage() {
-    console.log('previousPage');
+    if (this.isFirstPage) {
+      return;
+    }
+    this.goToOffset(this.offset - PAGE_SIZE);
+  }
+
+  async goToOffset(offset) {
+    this.offset = offset;
+
+    if (this.pageCache.has(offset)) {
+      this.currentPage = this.pageCache.get(offset);
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      const limit = Math.min(PAGE_SIZE, GEN_1_COUNT - offset);
+      const page = await this.pokeData.fetchPage(offset, limit);
+      this.pageCache.set(offset, page);
+      if (offset === this.offset) {
+        this.currentPage = page;
+      }
+    } finally {
+      if (offset === this.offset) {
+        this.isLoading = false;
+      }
+    }
   }
 
   <template>
@@ -78,11 +106,16 @@ export default class PokemonList extends Component {
       <input
         type="text"
         placeholder="Search by name"
+        aria-label="Search by name"
         value={{this.searchTerm}}
         class="search-input"
         {{on "input" this.updateSearch}}
       />
-      <select class="sort-select" {{on "change" this.updateSort}}>
+      <select
+        class="sort-select"
+        aria-label="Sort pokemon"
+        {{on "change" this.updateSort}}
+      >
         <option value="id">Sort by ID</option>
         <option value="name">Sort by name</option>
       </select>
@@ -97,14 +130,23 @@ export default class PokemonList extends Component {
     <div class="pagination">
       <button
         type="button"
-        class="page-button"
+        class="page-button page-button--previous"
+        disabled={{this.isFirstPage}}
         {{on "click" this.previousPage}}
       >
         Previous
       </button>
-      <button type="button" class="page-button" {{on "click" this.nextPage}}>
+      <button
+        type="button"
+        class="page-button page-button--next"
+        disabled={{this.isLastPage}}
+        {{on "click" this.nextPage}}
+      >
         Next
       </button>
+      {{#if this.isLoading}}
+        <span class="pagination-status">Loading…</span>
+      {{/if}}
     </div>
   </template>
 }

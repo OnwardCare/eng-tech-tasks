@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -178,6 +178,17 @@ a {
   background: #fff;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.page-button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.pagination-status {
+  align-self: center;
+  color: #777;
+  font-size: 0.9rem;
 }
 
 .pokemon-detail {
