@@ -261,3 +261,26 @@ a {
 .empty-state {
   color: #777;
 }
+
+.evolution-pokemon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e3e3e8;
+  border-radius: 8px;
+  min-width: 96px;
+}
+
+
+.evolution-sprite {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.evolution-name {
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
