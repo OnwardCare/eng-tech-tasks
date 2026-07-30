@@ -20,15 +20,19 @@ export default class FeaturedRotator extends Component {
 
   async loadFeatured() {
     const id = Math.floor(Math.random() * 151) + 1;
-    const data = await this.pokeData.fetchPokemon(id);
-    if (this.isDestroying || this.isDestroyed) {
-      return;
+    try {
+      const data = await this.pokeData.fetchPokemon(id);
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+      this.featured = {
+        id: data.id,
+        name: data.name,
+        sprite: data.sprites.other['official-artwork'].front_default,
+      };
+    } catch (error) {
+      console.error(error);
     }
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
   }
 
   <template>

@@ -11,41 +11,52 @@ export default class PokemonDetail extends Component {
 
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked error = false;
 
   load = modifier((element, [pokemonId]) => {
     this.loadPokemon(pokemonId);
   });
 
   async loadPokemon(pokemonId) {
-    const data = await this.pokeData.fetchPokemon(pokemonId);
-    if (pokemonId !== this.args.pokemonId) {
-      return;
-    }
-    this.pokemon = {
-      id: data.id,
-      name: data.name,
-      height: data.height,
-      weight: data.weight,
-      artwork: data.sprites.other['official-artwork'].front_default,
-      types: data.types.map((t) => t.type.name),
-      abilities: data.abilities.map((a) => a.ability.name),
-      stats: data.stats.map((s) => ({
-        name: s.stat.name,
-        value: s.base_stat,
-      })),
-    };
-    const species = await this.pokeData.fetchSpecies(data.id);
-    const entry = species.flavor_text_entries.find(
-      (e) => e.language.name === 'en',
-    );
-    if (pokemonId === this.args.pokemonId) {
-      this.flavorText = entry ? entry.flavor_text : '';
+    this.error = false;
+    try {
+      const data = await this.pokeData.fetchPokemon(pokemonId);
+      if (pokemonId !== this.args.pokemonId) {
+        return;
+      }
+      this.pokemon = {
+        id: data.id,
+        name: data.name,
+        height: data.height,
+        weight: data.weight,
+        artwork: data.sprites.other['official-artwork'].front_default,
+        types: data.types.map((t) => t.type.name),
+        abilities: data.abilities.map((a) => a.ability.name),
+        stats: data.stats.map((s) => ({
+          name: s.stat.name,
+          value: s.base_stat,
+        })),
+      };
+      const species = await this.pokeData.fetchSpecies(data.id);
+      const entry = species.flavor_text_entries.find(
+        (e) => e.language.name === 'en',
+      );
+      if (pokemonId === this.args.pokemonId) {
+        this.flavorText = entry ? entry.flavor_text : '';
+      }
+    } catch (error) {
+      console.error(error);
+      if (pokemonId === this.args.pokemonId) {
+        this.error = true;
+      }
     }
   }
 
   <template>
     <div class="pokemon-detail" {{this.load @pokemonId}}>
-      {{#if this.pokemon}}
+      {{#if this.error}}
+        <p class="detail-error">Couldn't load this Pokémon.</p>
+      {{else if this.pokemon}}
         <div class="detail-header">
           <img
             src={{this.pokemon.artwork}}
@@ -98,6 +109,8 @@ export default class PokemonDetail extends Component {
           <h2>Evolution chain</h2>
           <EvolutionChain @pokemonId={{@pokemonId}} />
         </section>
+      {{else}}
+        <p class="detail-loading">Loading…</p>
       {{/if}}
     </div>
   </template>

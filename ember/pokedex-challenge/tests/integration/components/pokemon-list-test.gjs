@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'pokedex-challenge/tests/helpers';
-import { render, click, findAll, waitUntil } from '@ember/test-helpers';
+import { render, click, find, findAll, waitUntil } from '@ember/test-helpers';
 import PokemonList from 'pokedex-challenge/components/pokemon-list';
 
 const firstPage = Array.from({ length: 20 }, (_, i) => ({
@@ -51,5 +51,29 @@ module('Integration | Component | pokemon-list', function (hooks) {
       firstPage.map((p) => p.name),
       'back on page 1, showing the exact original seeded page',
     );
+  });
+
+  test('shows an error and rolls back the offset when a page fails to load', async function (assert) {
+    await render(<template><PokemonList @pokemon={{firstPage}} /></template>);
+
+    const originalFetch = window.fetch;
+    window.fetch = () => Promise.resolve(new Response('{}', { status: 500 }));
+
+    try {
+      await click('.page-button--next');
+      await waitUntil(() => find('.pagination-error'));
+
+      assert.dom('.pagination-error').exists();
+      assert
+        .dom('.page-button--previous')
+        .isDisabled('rolled back to the first page');
+      assert.deepEqual(
+        findAll('.pokemon-name').map((el) => el.textContent.trim()),
+        firstPage.map((p) => p.name),
+        'still showing the original first page after the failed fetch',
+      );
+    } finally {
+      window.fetch = originalFetch;
+    }
   });
 });

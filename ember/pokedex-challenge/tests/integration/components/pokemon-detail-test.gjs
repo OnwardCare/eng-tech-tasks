@@ -29,4 +29,19 @@ module('Integration | Component | pokemon-detail', function (hooks) {
       .dom('.evolution-link')
       .exists('the evolution chain reloads along with the rest of the page');
   });
+
+  test('shows an error state when the pokemon fails to load', async function (assert) {
+    const originalFetch = window.fetch;
+    window.fetch = () => Promise.resolve(new Response('{}', { status: 404 }));
+
+    try {
+      await render(<template><PokemonDetail @pokemonId={{9999}} /></template>);
+      await waitUntil(() => find('.detail-error'));
+
+      assert.dom('.detail-error').hasText("Couldn't load this Pokémon.");
+      assert.dom('.detail-artwork').doesNotExist();
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
 });

@@ -191,6 +191,30 @@ a {
   font-size: 0.9rem;
 }
 
+.pagination-error {
+  color: #c0392b;
+}
+
+.route-loading,
+.route-error,
+.detail-loading,
+.detail-error {
+  color: #777;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.route-error,
+.detail-error {
+  color: #c0392b;
+}
+
+.route-error-detail {
+  color: #999;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 .pokemon-detail {
   background: #fff;
   border: 1px solid #e3e3e8;

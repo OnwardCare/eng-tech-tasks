@@ -7,7 +7,14 @@ export default class PokeDataService extends Service {
 
   fetchJSON(url) {
     if (!this.cache.has(url)) {
-      const promise = fetch(url).then((response) => response.json());
+      const promise = fetch(url).then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `PokeAPI request failed (${response.status}): ${url}`,
+          );
+        }
+        return response.json();
+      });
       promise.catch(() => this.cache.delete(url));
       this.cache.set(url, promise);
     }

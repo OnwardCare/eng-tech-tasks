@@ -75,4 +75,27 @@ module('Unit | Service | poke-data', function (hooks) {
       window.fetch = originalFetch;
     }
   });
+
+  test('throws on a non-ok response and does not cache the failure', async function (assert) {
+    const pokeData = this.owner.lookup('service:poke-data');
+    const originalFetch = window.fetch;
+    let callCount = 0;
+    window.fetch = () => {
+      callCount++;
+      return Promise.resolve(new Response('{}', { status: 404 }));
+    };
+
+    try {
+      await assert.rejects(pokeData.fetchJSON('https://example.test/x'));
+      await assert.rejects(pokeData.fetchJSON('https://example.test/x'));
+
+      assert.strictEqual(
+        callCount,
+        2,
+        'a failed request is not cached, so it can be retried',
+      );
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
 });

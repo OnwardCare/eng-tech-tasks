@@ -17,6 +17,7 @@ export default class PokemonList extends Component {
   @tracked offset = 0;
   @tracked currentPage = null;
   @tracked isLoading = false;
+  @tracked pageError = false;
 
   pageCache = new Map();
 
@@ -50,6 +51,14 @@ export default class PokemonList extends Component {
     return this.offset + PAGE_SIZE >= GEN_1_COUNT;
   }
 
+  get isPreviousDisabled() {
+    return this.isFirstPage || this.isLoading;
+  }
+
+  get isNextDisabled() {
+    return this.isLastPage || this.isLoading;
+  }
+
   @action
   updateSearch(event) {
     this.searchTerm = event.target.value;
@@ -77,7 +86,9 @@ export default class PokemonList extends Component {
   }
 
   async goToOffset(offset) {
+    const previousOffset = this.offset;
     this.offset = offset;
+    this.pageError = false;
 
     if (this.pageCache.has(offset)) {
       this.currentPage = this.pageCache.get(offset);
@@ -92,10 +103,14 @@ export default class PokemonList extends Component {
       if (offset === this.offset) {
         this.currentPage = page;
       }
-    } finally {
+    } catch (error) {
+      console.error(error);
       if (offset === this.offset) {
-        this.isLoading = false;
+        this.offset = previousOffset;
+        this.pageError = true;
       }
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -131,7 +146,7 @@ export default class PokemonList extends Component {
       <button
         type="button"
         class="page-button page-button--previous"
-        disabled={{this.isFirstPage}}
+        disabled={{this.isPreviousDisabled}}
         {{on "click" this.previousPage}}
       >
         Previous
@@ -139,13 +154,17 @@ export default class PokemonList extends Component {
       <button
         type="button"
         class="page-button page-button--next"
-        disabled={{this.isLastPage}}
+        disabled={{this.isNextDisabled}}
         {{on "click" this.nextPage}}
       >
         Next
       </button>
       {{#if this.isLoading}}
         <span class="pagination-status">Loading…</span>
+      {{else if this.pageError}}
+        <span class="pagination-status pagination-error">
+          Couldn't load that page. Try again.
+        </span>
       {{/if}}
     </div>
   </template>
