@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
 import { LinkTo } from '@ember/routing';
 
 export default class FeaturedRotator extends Component {

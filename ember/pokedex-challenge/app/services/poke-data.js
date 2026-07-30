@@ -14,4 +14,14 @@ export default class PokeDataService extends Service {
     const response = await fetch(`${BASE_URL}/pokemon/${idOrName}`);
     return response.json();
   }
+
+  async fetchSpecies(idOrName) {
+    const response = await fetch(`${BASE_URL}/pokemon-species/${idOrName}`);
+    return response.json();
+  }
+
+  async fetchEvolutionChain(url) {
+    const response = await fetch(url);
+    return response.json();
+  }
 }

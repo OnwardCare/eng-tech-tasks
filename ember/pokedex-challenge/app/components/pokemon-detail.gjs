@@ -1,24 +1,39 @@
 import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { modifier } from 'ember-modifier';
 import { tracked } from '@glimmer/tracking';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 export default class PokemonDetail extends Component {
+  @service pokeData;
+
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked evolutionChainUrl = null;
+  @tracked isLoading = false;
+  @tracked error = null;
 
   constructor() {
     super(...arguments);
-    this.loadPokemon();
   }
 
-  async loadPokemon() {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
-    );
-    const data = await response.json();
-    console.log('loaded pokemon', data.name);
+  loadOnPokemonIdChange = modifier((_element, [pokemonId]) => {
+    this.loadPokemon(pokemonId);
+  });
+
+
+  async loadPokemon(pokemonId) {
+    this.isLoading = true;
+    this.error = null;
+    try {
+    const [data, species] = await Promise.all([
+      this.pokeData.fetchPokemon(pokemonId),
+      this.pokeData.fetchSpecies(pokemonId),
+    ]);
+
+    this.isLoading = false;
     this.pokemon = {
       id: data.id,
       name: data.name,
@@ -32,19 +47,24 @@ export default class PokemonDetail extends Component {
         value: s.base_stat,
       })),
     };
-    const speciesResponse = await fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${data.id}`,
-    );
-    const species = await speciesResponse.json();
     const entry = species.flavor_text_entries.find(
       (e) => e.language.name === 'en',
     );
     this.flavorText = entry ? entry.flavor_text : '';
+    this.evolutionChainUrl = species.evolution_chain?.url || null;
+  } catch (e) {
+    this.isLoading = false;
+    this.error = e.message || 'An error occurred';
+  }
   }
 
   <template>
-    <div class="pokemon-detail">
-      {{#if this.pokemon}}
+    <div class="pokemon-detail" {{this.loadOnPokemonIdChange @pokemonId}}>
+      {{#if this.isLoading}}
+        <p class="loading-state">Loading Pokémon…</p>
+      {{else if this.error}}
+        <p class="error-state">{{this.error}}</p>
+      {{else if this.pokemon}}
         <div class="detail-header">
           <img
             src={{this.pokemon.artwork}}
@@ -93,7 +113,7 @@ export default class PokemonDetail extends Component {
 
         <section class="detail-section">
           <h2>Evolution chain</h2>
-          <EvolutionChain @pokemonId={{this.pokemon.id}} />
+          <EvolutionChain @evolutionChainUrl={{this.evolutionChainUrl}} />
         </section>
       {{/if}}
     </div>
