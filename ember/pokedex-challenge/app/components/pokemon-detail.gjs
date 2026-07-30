@@ -1,11 +1,14 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 export default class PokemonDetail extends Component {
+  @service pokeData;
+
   @tracked pokemon = null;
   @tracked flavorText = '';
 
@@ -14,10 +17,7 @@ export default class PokemonDetail extends Component {
   });
 
   async loadPokemon(pokemonId) {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
-    );
-    const data = await response.json();
+    const data = await this.pokeData.fetchPokemon(pokemonId);
     if (pokemonId !== this.args.pokemonId) {
       return;
     }
@@ -34,10 +34,7 @@ export default class PokemonDetail extends Component {
         value: s.base_stat,
       })),
     };
-    const speciesResponse = await fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${data.id}`,
-    );
-    const species = await speciesResponse.json();
+    const species = await this.pokeData.fetchSpecies(data.id);
     const entry = species.flavor_text_entries.find(
       (e) => e.language.name === 'en',
     );

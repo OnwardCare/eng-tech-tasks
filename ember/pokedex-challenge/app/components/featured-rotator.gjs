@@ -1,9 +1,12 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 import { registerDestructor } from '@ember/destroyable';
 import { LinkTo } from '@ember/routing';
 
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
 
   constructor() {
@@ -17,8 +20,7 @@ export default class FeaturedRotator extends Component {
 
   async loadFeatured() {
     const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
+    const data = await this.pokeData.fetchPokemon(id);
     if (this.isDestroying || this.isDestroyed) {
       return;
     }

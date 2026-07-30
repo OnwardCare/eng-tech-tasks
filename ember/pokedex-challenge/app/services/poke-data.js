@@ -3,17 +3,27 @@ import Service from '@ember/service';
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
 export default class PokeDataService extends Service {
-  async fetchList(offset = 0, limit = 20) {
-    const response = await fetch(
+  cache = new Map();
+
+  fetchJSON(url) {
+    if (!this.cache.has(url)) {
+      const promise = fetch(url).then((response) => response.json());
+      promise.catch(() => this.cache.delete(url));
+      this.cache.set(url, promise);
+    }
+    return this.cache.get(url);
+  }
+
+  fetchList(offset = 0, limit = 20) {
+    return this.fetchJSON(
       `${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`,
     );
-    return response.json();
   }
 
   async fetchPage(offset = 0, limit = 20) {
     const list = await this.fetchList(offset, limit);
     const details = await Promise.all(
-      list.results.map((entry) => fetch(entry.url).then((r) => r.json())),
+      list.results.map((entry) => this.fetchJSON(entry.url)),
     );
     return details.map((detail) => ({
       id: detail.id,
@@ -23,18 +33,15 @@ export default class PokeDataService extends Service {
     }));
   }
 
-  async fetchPokemon(idOrName) {
-    const response = await fetch(`${BASE_URL}/pokemon/${idOrName}`);
-    return response.json();
+  fetchPokemon(idOrName) {
+    return this.fetchJSON(`${BASE_URL}/pokemon/${idOrName}`);
   }
 
-  async fetchSpecies(idOrName) {
-    const response = await fetch(`${BASE_URL}/pokemon-species/${idOrName}`);
-    return response.json();
+  fetchSpecies(idOrName) {
+    return this.fetchJSON(`${BASE_URL}/pokemon-species/${idOrName}`);
   }
 
-  async fetchEvolutionChain(url) {
-    const response = await fetch(url);
-    return response.json();
+  fetchEvolutionChain(url) {
+    return this.fetchJSON(url);
   }
 }
