@@ -1,7 +1,35 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+
+const STORAGE_KEY = 'my_favorites';
 
 export default class FavoritesService extends Service {
-  items = [];
+  @tracked items = [];
+
+  constructor() {
+    super(...arguments);
+    this.loadFromLocalStorage();
+  }
+
+  loadFromLocalStorage() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        this.items = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Failed to load favorites from localStorage', e);
+      this.items = [];
+    }
+  }
+
+  updateLocalStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items));
+    } catch (e) {
+      console.error('Failed to save favorites to localStorage', e);
+    }
+  }
 
   get count() {
     return this.items.length;
@@ -12,14 +40,15 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    if (!this.isFavorite(pokemon.id)) {
+      this.items = [...this.items, pokemon];
+      this.updateLocalStorage();
+    }
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    this.items = this.items.filter((item) => item.id !== id);
+    this.updateLocalStorage();
   }
 
   toggle(pokemon) {

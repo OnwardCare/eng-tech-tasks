@@ -25,6 +25,7 @@ export default class PokemonDetail extends Component {
       name: data.name,
       height: data.height,
       weight: data.weight,
+      sprite: data.sprites.front_default, // Map sprite URL explicitly so PokemonCard can render the image on the /favorites page
       artwork: data.sprites.other['official-artwork'].front_default,
       types: data.types.map((t) => t.type.name),
       abilities: data.abilities.map((a) => a.ability.name),
