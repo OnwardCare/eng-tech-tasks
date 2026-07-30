@@ -28,11 +28,29 @@ export default class PokeDataService extends Service {
 
   async fetchEvolutionChain(pokemonId) {
     const speciesRes = await fetch(`${BASE_URL}/pokemon-species/${pokemonId}`);
-    if (!speciesRes.ok) throw new Error('Failed to fetch evolution chain');
+    if (!speciesRes.ok) {
+      return {
+        unavailable: true,
+        message: 'No available for this Pokemon.',
+      };
+    }
     const speciesData = await speciesRes.json();
+
     const response = await fetch(speciesData.evolution_chain.url);
     if (!response.ok) throw new Error('Failed to fetch evolution chain');
     return response.json();
+  }
+
+  // Helper function to convert the raw Pokemon data into a format that can be used by the PokemonCard component
+  PokemonDataCard(detail) {
+    return {
+      id: detail.id,
+      name: detail.name,
+      sprite:
+        detail.sprites.front_default ||
+        detail.sprites.other['official-artwork'].front_default,
+      types: detail.types.map((t) => t.type.name),
+    };
   }
 
   async fetchPokemonPage(offset = 0, limit = PAGE_SIZE) {
@@ -40,14 +58,38 @@ export default class PokeDataService extends Service {
     return Promise.all(
       list.results.map(async (entry) => {
         const detail = await this.fetchPokemon(entry.name);
-        return {
-          id: detail.id,
-          name: detail.name,
-          sprite: detail.sprites.front_default,
-          types: detail.types.map((t) => t.type.name),
-        };
+        return this.PokemonDataCard(detail);
       }),
     );
   }
-  s;
+
+  async fetchEmAllPokemons() {
+    const list = await this.fetchList(0, API_POKEMON_LIMIT);
+    return list.results.map((entry) => {
+      const segments = entry.url.split('/').filter(Boolean);
+      return {
+        name: entry.name,
+      };
+    });
+  }
+
+  async searchPokemons(query, limit = PAGE_SIZE) {
+    const term = query.trim().toLowerCase();
+    if (!term) {
+      return [];
+    }
+
+    // Gotta catch 'em all since there is no partial search in the API
+    const pokemons = await this.fetchEmAllPokemons();
+    const matches = pokemons
+      .filter((p) => p.name.includes(term))
+      .slice(0, limit);
+
+    return Promise.all(
+      matches.map(async (p) => {
+        const data = await this.fetchPokemon(p.name);
+        return this.PokemonDataCard(data);
+      }),
+    );
+  }
 }

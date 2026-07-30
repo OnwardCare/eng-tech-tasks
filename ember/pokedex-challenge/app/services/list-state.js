@@ -3,4 +3,5 @@ import { tracked } from '@glimmer/tracking';
 
 export default class ListStateService extends Service {
   @tracked offset = 0;
+  @tracked searchTerm = '';
 }

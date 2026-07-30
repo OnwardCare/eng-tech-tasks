@@ -44,11 +44,17 @@ export default class PokemonDetail extends Component {
         })),
       };
 
-      const species = await this.pokeData.fetchSpecies(data.id);
-      const entry = species.flavor_text_entries.find(
-        (e) => e.language.name === 'en',
-      );
-      this.flavorText = entry ? entry.flavor_text : '';
+      try {
+        const species = await this.pokeData.fetchSpecies(data.id);
+        const entry = species.flavor_text_entries.find(
+          (e) => e.language.name === 'en',
+        );
+        this.flavorText = entry
+          ? entry.flavor_text
+          : 'No description available for this Pokémon.';
+      } catch {
+        this.flavorText = 'No description available for this Pokemon.';
+      }
     } catch (err) {
       this.error = err.message || 'Failed to load Pokemon';
     } finally {

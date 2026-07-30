@@ -23,6 +23,11 @@ export default class EvolutionChainComponent extends Component {
       // Step 1: Fetch species info to get evolution_chain.url for the given pokemon id
       const data = await this.pokeData.fetchEvolutionChain(pokemonId);
 
+      if (data.unavailable) {
+        this.error = data.message;
+        return;
+      }
+
       // Step 2: Flatten the evolution chain to get each stage's id and name
       const stagesInfo = this.flattenEvolutionChain(data.chain);
 
