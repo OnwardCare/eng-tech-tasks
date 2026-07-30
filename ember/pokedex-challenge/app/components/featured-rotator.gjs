@@ -1,28 +1,36 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
+import { registerDestructor } from '@ember/destroyable';
+import { API_POKEMON_LIMIT } from 'pokedex-challenge/services/poke-data';
 
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
 
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       this.loadFeatured();
     }, 8000);
+    registerDestructor(this, () => clearInterval(intervalId));
   }
 
   async loadFeatured() {
-    const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
+    try {
+      const id = Math.floor(Math.random() * API_POKEMON_LIMIT) + 1;
+      const data = await this.pokeData.fetchPokemon(id);
+      this.featured = {
+        id: data.id,
+        name: data.name,
+        sprite: data.sprites.other['official-artwork'].front_default,
+      };
+    } catch {
+      // Keep the previously featured Pokémon if a refresh fails
+    }
   }
 
   <template>

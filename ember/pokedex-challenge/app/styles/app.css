@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -115,6 +115,10 @@ a {
   text-align: center;
 }
 
+.pokemon-card.is-highlighted {
+  border: 2px solid #fcba03;
+}
+
 .pokemon-card .favorite-button {
   position: absolute;
   top: 0.5rem;
@@ -185,6 +189,17 @@ a {
   border: 1px solid #e3e3e8;
   border-radius: 8px;
   padding: 1.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #d53b47;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 .detail-header {
@@ -258,6 +273,50 @@ a {
   text-align: center;
 }
 
+.evolution-placeholder .pokemon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.evolution-stage {
+  flex: 0 1 180px;
+  min-width: 0;
+}
+
+.evolution-arrow {
+  width: 20px;
+  flex: 0 0 20px;
+  text-align: center;
+  line-height: 1;
+}
+
+.evolution-error,
+.error-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: #a33;
+  background: #fff5f5;
+  border: 1px solid #f0c2c2;
+  border-radius: 8px;
+}
+
+.error-state .page-button {
+  margin-top: 0.75rem;
+}
+
 .empty-state {
   color: #777;
+}
+
+.list-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #777;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
