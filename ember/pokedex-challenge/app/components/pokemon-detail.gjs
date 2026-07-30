@@ -1,23 +1,24 @@
 import Component from '@glimmer/component';
+import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 
 export default class PokemonDetail extends Component {
+  @service pokeData;
+
   @tracked pokemon = null;
   @tracked flavorText = '';
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
-  }
+  loadOnIdChange = modifier((_element, [pokemonId]) => {
+    this.loadPokemon(pokemonId);
+  });
 
-  async loadPokemon() {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
-    );
-    const data = await response.json();
+  async loadPokemon(pokemonId) {
+    const data = await this.pokeData.fetchPokemon(pokemonId);
+
     console.log('loaded pokemon', data.name);
     this.pokemon = {
       id: data.id,
@@ -43,7 +44,7 @@ export default class PokemonDetail extends Component {
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" {{this.loadOnIdChange @pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
@@ -64,7 +65,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>

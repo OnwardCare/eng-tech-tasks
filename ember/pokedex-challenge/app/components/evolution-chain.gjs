@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 
 export default class EvolutionChainComponent extends Component {
@@ -10,18 +11,17 @@ export default class EvolutionChainComponent extends Component {
   @tracked error = null;
   @tracked evolutionChain = [];
 
-  constructor() {
-    super(...arguments);
-    this.loadData();
-  }
+  loadOnIdChange = modifier((_element, [pokemonId]) => {
+    this.loadData(pokemonId);
+  });
 
-  async loadData() {
+  async loadData(pokemonId) {
     try {
       this.isLoading = true;
       this.error = null;
 
       // Step 1: Fetch species info to get evolution_chain.url for the given pokemon id
-      const data = await this.pokeData.fetchEvolutionChain(this.args.pokemonId);
+      const data = await this.pokeData.fetchEvolutionChain(pokemonId);
 
       // Step 2: Flatten the evolution chain to get each stage's id and name
       const stagesInfo = this.flattenEvolutionChain(data.chain);
@@ -30,7 +30,7 @@ export default class EvolutionChainComponent extends Component {
       this.evolutionChain = await Promise.all(
         stagesInfo.map(async (stage) => {
           const pokemonData = await this.pokeData.fetchPokemon(stage.id);
-          const isActive = String(stage.id) === String(this.args.pokemonId);
+          const isActive = String(stage.id) === String(pokemonId);
           return {
             isActive,
             data: {
