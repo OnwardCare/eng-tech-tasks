@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
+import { modifier } from 'ember-modifier';
 
 function idFromSpeciesUrl(url) {
   return url.match(/\/(\d+)\/?$/)[1];
@@ -13,22 +14,25 @@ export default class EvolutionChain extends Component {
   @tracked stages = null;
   @tracked error = false;
 
-  constructor() {
-    super(...arguments);
-    this.load();
-  }
+  load = modifier((element, [pokemonId]) => {
+    this.fetchChain(pokemonId);
+  });
 
-  async load() {
+  async fetchChain(pokemonId) {
     this.stages = null;
     this.error = false;
     try {
-      const species = await this.pokeData.fetchSpecies(this.args.pokemonId);
+      const species = await this.pokeData.fetchSpecies(pokemonId);
       const { chain } = await this.pokeData.fetchEvolutionChain(
         species.evolution_chain.url,
       );
-      this.stages = this.flatten(chain);
+      if (pokemonId === this.args.pokemonId) {
+        this.stages = this.flatten(chain);
+      }
     } catch (error) {
-      this.error = true;
+      if (pokemonId === this.args.pokemonId) {
+        this.error = true;
+      }
       console.error(error);
     }
   }
@@ -51,21 +55,25 @@ export default class EvolutionChain extends Component {
   }
 
   <template>
-    <div class="evolution-chain">
+    <div class="evolution-chain" {{this.load @pokemonId}}>
       {{#if this.error}}
-        <p class="evolution-error">Couldn't load the evolution chanin.</p>
+        <p class="evolution-error">Couldn't load the evolution chain.</p>
       {{else if this.stages}}
-      <ol class="evolution-stages">
-        {{#each this.stages as |stage|}}
-        <li class="evolution-stage">
-          {{#each stage as |pokemon|}}
-          <LinkTo @route="pokemon" @model={{pokemon.id}} class="evolution-link">
-          {{pokemon.name}}
-          </LinkTo>
+        <ol class="evolution-stages">
+          {{#each this.stages as |stage|}}
+            <li class="evolution-stage">
+              {{#each stage as |pokemon|}}
+                <LinkTo
+                  @route="pokemon"
+                  @model={{pokemon.id}}
+                  class="evolution-link"
+                >
+                  {{pokemon.name}}
+                </LinkTo>
+              {{/each}}
+            </li>
           {{/each}}
-        </li>
-        {{/each}}
-      </ol>
+        </ol>
       {{else}}
         <p class="evolution-loading">Loading evolution chain.</p>
       {{/if}}
