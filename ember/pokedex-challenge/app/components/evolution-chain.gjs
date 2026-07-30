@@ -47,8 +47,6 @@ export default class EvolutionChainComponent extends Component {
     this.error = null;
     this.evolutions = [];
 
-    console.log('Loading evolution chain from URL:', url);
-
     if(!url) {
       this.isLoading = false;
       return;
