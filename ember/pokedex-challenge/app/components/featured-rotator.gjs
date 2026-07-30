@@ -1,28 +1,38 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { service } from '@ember/service';
+import { registerDestructor } from '@ember/destroyable';
 import { LinkTo } from '@ember/routing';
 
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
 
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       this.loadFeatured();
     }, 8000);
+    registerDestructor(this, () => clearInterval(intervalId));
   }
 
   async loadFeatured() {
     const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
+    try {
+      const data = await this.pokeData.fetchPokemon(id);
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+      this.featured = {
+        id: data.id,
+        name: data.name,
+        sprite: data.sprites.other['official-artwork'].front_default,
+      };
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   <template>
