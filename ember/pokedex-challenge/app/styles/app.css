@@ -250,12 +250,39 @@ a {
   color: #666;
 }
 
-.evolution-placeholder {
-  padding: 1rem;
-  border: 1px dashed #ccc;
-  border-radius: 6px;
+.evolution-chain {
+  display: flex;
+  align-items: center;
+}
+
+.evolution-stages {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.5rem;
+}
+
+.evolution-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.evolution-stage:not(:first-child)::before {
+  content: "→";
   color: #999;
-  text-align: center;
+}
+
+.evolution-link {
+  text-transform: capitalize;
+}
+
+.evolution-loading,
+.evolution-error {
+  color: #999;
 }
 
 .empty-state {
