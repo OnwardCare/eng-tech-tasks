@@ -41,4 +41,31 @@ module('Acceptance | pokemon navigation', function (hooks) {
       'evolution chain reloads for the new pokemon rather than staying stuck on the previous one',
     );
   });
+
+  test('navigating back to a previously-visited pokemon reloads its content (STORY-04 regression)', async function (assert) {
+    await visit('/pokemon/1');
+    await waitUntil(() => document.querySelector('.detail-name'));
+    assert.dom('.detail-name').containsText('bulbasaur');
+
+    await visit('/pokemon/2');
+    await waitUntil(() =>
+      document.querySelector('.detail-name')?.textContent.includes('ivysaur'),
+    );
+    assert.dom('.detail-name').containsText('ivysaur');
+
+    // Simulate the browser back button: navigating to a previously-visited
+    // /pokemon/:id route reuses the same component instance the same way
+    // clicking back/forward does, so this exercises the identical
+    // reload-on-argument-change code path as STORY-04's fix.
+    await visit('/pokemon/1');
+    await waitUntil(() =>
+      document.querySelector('.detail-name')?.textContent.includes('bulbasaur'),
+    );
+
+    assert.dom('.detail-name').containsText('bulbasaur');
+    assert.dom('.detail-id').hasText('#1');
+    assert
+      .dom('.detail-name')
+      .doesNotContainText('ivysaur', 'stale ivysaur content is gone');
+  });
 });
