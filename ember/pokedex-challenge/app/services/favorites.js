@@ -26,7 +26,7 @@ export default class FavoritesService extends Service {
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       this.#localStorageAvailable = true;
-    } catch (e) {
+    } catch {
       this.#localStorageAvailable = false;
     }
   }
@@ -72,6 +72,7 @@ export default class FavoritesService extends Service {
   /**
    * Lazy-load full Pokemon objects for favorite IDs that don't have objects yet
    * Called by /favorites route to ensure all pokemon are loaded
+   * Transforms API response to include sprite and types for pokemon-card display
    * @async
    */
   async preloadFavoritesIfNeeded() {
@@ -85,9 +86,18 @@ export default class FavoritesService extends Service {
 
     for (const id of missingIds) {
       try {
-        const pokemon = await this.pokeData.fetchPokemon(id);
-        if (pokemon && !this.items.some((p) => p.id === id)) {
+        const data = await this.pokeData.fetchPokemon(id);
+        if (data && !this.items.some((p) => p.id === id)) {
+          // Transform API response to match pokemon-card expectations
+          const pokemon = {
+            id: data.id,
+            name: data.name,
+            sprite: data.sprites.front_default,
+            types: data.types.map((t) => t.type.name),
+          };
           this.items.push(pokemon);
+          // Reassign to trigger tracking
+          this.items = [...this.items];
         }
       } catch (e) {
         console.warn(`Failed to load pokemon ${id} for favorites:`, e);
@@ -105,6 +115,8 @@ export default class FavoritesService extends Service {
 
   add(pokemon) {
     this.items.push(pokemon);
+    // Reassign to trigger tracking
+    this.items = [...this.items];
     this.syncToLocalStorage();
   }
 
@@ -112,6 +124,8 @@ export default class FavoritesService extends Service {
     const index = this.items.findIndex((item) => item.id === id);
     if (index !== -1) {
       this.items.splice(index, 1);
+      // Reassign to trigger tracking
+      this.items = [...this.items];
     }
     this.syncToLocalStorage();
   }
