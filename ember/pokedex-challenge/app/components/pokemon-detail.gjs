@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
@@ -7,19 +8,21 @@ import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked evolutionChainUrl = null;
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
-  }
+  loadPokemon = modifier((element, [pokemonId]) => {
+    this.pokemon = null;
+    this.flavorText = '';
+    this.evolutionChainUrl = null;
+    this.fetchPokemon(pokemonId);
+  });
 
-  async loadPokemon() {
+  async fetchPokemon(pokemonId) {
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
+      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
     );
     const data = await response.json();
-    console.log('loaded pokemon', data.name);
-    this.pokemon = {
+    const pokemon = {
       id: data.id,
       name: data.name,
       height: data.height,
@@ -39,11 +42,16 @@ export default class PokemonDetail extends Component {
     const entry = species.flavor_text_entries.find(
       (e) => e.language.name === 'en',
     );
+
+    if (pokemonId !== this.args.pokemonId) return;
+
+    this.pokemon = pokemon;
     this.flavorText = entry ? entry.flavor_text : '';
+    this.evolutionChainUrl = species.evolution_chain.url;
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" {{this.loadPokemon @pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
@@ -64,7 +72,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>
@@ -91,10 +101,16 @@ export default class PokemonDetail extends Component {
           </ul>
         </section>
 
-        <section class="detail-section">
-          <h2>Evolution chain</h2>
-          <EvolutionChain @pokemonId={{this.pokemon.id}} />
-        </section>
+        {{#if this.evolutionChainUrl}}
+          <section class="detail-section">
+            <h2>Evolution chain</h2>
+
+            <EvolutionChain
+              @evolutionChainUrl={{this.evolutionChainUrl}}
+              @currentId={{this.pokemon.id}}
+            />
+          </section>
+        {{/if}}
       {{/if}}
     </div>
   </template>
