@@ -115,6 +115,19 @@ a {
   text-align: center;
 }
 
+.favorite-button {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #bbb;
+  line-height: 1;
+}
+
+.favorite-button.is-favorite {
+  color: #f5b942;
+}
+
 .pokemon-card .favorite-button {
   position: absolute;
   top: 0.5rem;
@@ -149,19 +162,6 @@ a {
 .type-badge {
   font-size: 0.8rem;
   text-transform: capitalize;
-}
-
-.favorite-button {
-  border: none;
-  background: transparent;
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: #bbb;
-  line-height: 1;
-}
-
-.favorite-button.is-favorite {
-  color: #f5b942;
 }
 
 .pagination {

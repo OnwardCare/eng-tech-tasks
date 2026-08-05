@@ -124,11 +124,16 @@ export default class PokemonList extends Component {
       <input
         type="text"
         placeholder="Search by name"
+        aria-label="Search Pokémon by name"
         value={{this.searchTerm}}
         class="search-input"
         {{on "input" this.updateSearch}}
       />
-      <select class="sort-select" {{on "change" this.updateSort}}>
+      <select
+        class="sort-select"
+        aria-label="Sort Pokémon"
+        {{on "change" this.updateSort}}
+      >
         <option value="id">Sort by ID</option>
         <option value="name">Sort by name</option>
       </select>
