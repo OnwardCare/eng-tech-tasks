@@ -12,41 +12,48 @@ export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
   @tracked evolutionChainUrl = null;
+  @tracked hasError = false;
 
   loadPokemon = modifier((element, [pokemonId]) => {
     this.pokemon = null;
     this.flavorText = '';
     this.evolutionChainUrl = null;
+    this.hasError = false;
     this.fetchPokemon(pokemonId);
   });
 
   async fetchPokemon(pokemonId) {
-    const [data, species] = await Promise.all([
-      this.pokeData.fetchPokemon(pokemonId),
-      this.pokeData.fetchSpecies(pokemonId),
-    ]);
-    const pokemon = {
-      id: data.id,
-      name: data.name,
-      height: data.height,
-      weight: data.weight,
-      artwork: data.sprites.other['official-artwork'].front_default,
-      types: data.types.map((t) => t.type.name),
-      abilities: data.abilities.map((a) => a.ability.name),
-      stats: data.stats.map((s) => ({
-        name: s.stat.name,
-        value: s.base_stat,
-      })),
-    };
-    const entry = species.flavor_text_entries.find(
-      (e) => e.language.name === 'en',
-    );
+    try {
+      const [data, species] = await Promise.all([
+        this.pokeData.fetchPokemon(pokemonId),
+        this.pokeData.fetchSpecies(pokemonId),
+      ]);
+      const pokemon = {
+        id: data.id,
+        name: data.name,
+        height: data.height,
+        weight: data.weight,
+        artwork: data.sprites.other['official-artwork'].front_default,
+        types: data.types.map((t) => t.type.name),
+        abilities: data.abilities.map((a) => a.ability.name),
+        stats: data.stats.map((s) => ({
+          name: s.stat.name,
+          value: s.base_stat,
+        })),
+      };
+      const entry = species.flavor_text_entries.find(
+        (e) => e.language.name === 'en',
+      );
 
-    if (pokemonId !== this.args.pokemonId) return;
+      if (pokemonId !== this.args.pokemonId) return;
 
-    this.pokemon = pokemon;
-    this.flavorText = entry ? entry.flavor_text : '';
-    this.evolutionChainUrl = species.evolution_chain.url;
+      this.pokemon = pokemon;
+      this.flavorText = entry ? entry.flavor_text : '';
+      this.evolutionChainUrl = species.evolution_chain.url;
+    } catch {
+      if (pokemonId !== this.args.pokemonId) return;
+      this.hasError = true;
+    }
   }
 
   <template>
@@ -110,6 +117,10 @@ export default class PokemonDetail extends Component {
             />
           </section>
         {{/if}}
+      {{else if this.hasError}}
+        <p class="status-message">Couldn't load this Pokémon.</p>
+      {{else}}
+        <p class="status-message">Loading Pokémon&hellip;</p>
       {{/if}}
     </div>
   </template>

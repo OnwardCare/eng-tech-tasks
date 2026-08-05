@@ -28,12 +28,17 @@ export default class FeaturedRotator extends Component {
 
   async loadFeatured() {
     const id = Math.floor(Math.random() * GEN_1_COUNT) + 1;
-    const data = await this.pokeData.fetchPokemon(id);
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
+    try {
+      const data = await this.pokeData.fetchPokemon(id);
+      this.featured = {
+        id: data.id,
+        name: data.name,
+        sprite: data.sprites.other['official-artwork'].front_default,
+      };
+    } catch {
+      // Decorative widget: skip this rotation and retry on the next tick
+      // rather than surfacing an error for a non-critical banner.
+    }
   }
 
   <template>

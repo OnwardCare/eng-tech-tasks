@@ -295,7 +295,7 @@ a {
   background: #f5f5f5;
 }
 
-.evolution-stage--locked {
+.evolution-stage-locked {
   border-style: dashed;
   color: #999;
   cursor: help;
@@ -306,8 +306,7 @@ a {
   font-size: 1.25rem;
 }
 
-.evolution-loading,
-.evolution-error {
+.status-message {
   color: #999;
 }
 

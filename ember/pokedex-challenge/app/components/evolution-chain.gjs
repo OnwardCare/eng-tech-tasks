@@ -43,7 +43,9 @@ export default class EvolutionChain extends Component {
   <template>
     <div class="evolution-chain" {{this.loadChain @evolutionChainUrl}}>
       {{#if this.hasError}}
-        <p class="evolution-error">Couldn't load the evolution chain.</p>
+        <p class="status-message evolution-error">
+          Couldn't load the evolution chain.
+        </p>
       {{else if this.decoratedLevels}}
         {{#each this.decoratedLevels as |level index|}}
           {{#if index}}
@@ -58,7 +60,7 @@ export default class EvolutionChain extends Component {
                 >{{stage.name}}</span>
               {{else if stage.isOutOfRange}}
                 <span
-                  class="evolution-stage evolution-stage--locked"
+                  class="evolution-stage evolution-stage-locked"
                   title="{{stage.name}} is outside Generation 1 and isn't available in this Pokédex."
                   tabindex="0"
                 >{{stage.name}}</span>
@@ -75,7 +77,9 @@ export default class EvolutionChain extends Component {
           </div>
         {{/each}}
       {{else}}
-        <p class="evolution-loading">Loading evolution chain&hellip;</p>
+        <p class="status-message evolution-loading">
+          Loading evolution chain&hellip;
+        </p>
       {{/if}}
     </div>
   </template>

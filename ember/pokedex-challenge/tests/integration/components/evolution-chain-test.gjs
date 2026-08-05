@@ -88,7 +88,7 @@ module('Integration | Component | evolution-chain', function (hooks) {
     const espeon = findAll('.evolution-stage').find(
       (element) => element.textContent.trim() === 'espeon',
     );
-    assert.dom(espeon).hasTagName('span').hasClass('evolution-stage--locked');
+    assert.dom(espeon).hasTagName('span').hasClass('evolution-stage-locked');
     assert.notOk(
       espeon.hasAttribute('href'),
       'out-of-range stage is not a link',
