@@ -57,7 +57,7 @@ a {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #888;
+  color: #666;
   margin-bottom: 0.25rem;
 }
 
@@ -147,7 +147,7 @@ a {
 }
 
 .pokemon-id {
-  color: #999;
+  color: #666;
   font-size: 0.85rem;
 }
 
@@ -222,7 +222,7 @@ a {
 }
 
 .detail-id {
-  color: #999;
+  color: #666;
   font-weight: 400;
 }
 
@@ -231,7 +231,7 @@ a {
 }
 
 .detail-measurements {
-  color: #777;
+  color: #666;
   font-size: 0.9rem;
 }
 
@@ -297,7 +297,7 @@ a {
 
 .evolution-stage-locked {
   border-style: dashed;
-  color: #999;
+  color: #666;
   cursor: help;
 }
 
@@ -307,9 +307,9 @@ a {
 }
 
 .status-message {
-  color: #999;
+  color: #666;
 }
 
 .empty-state {
-  color: #777;
+  color: #666;
 }
