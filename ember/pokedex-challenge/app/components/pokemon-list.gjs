@@ -13,25 +13,34 @@ import {
 
 const PAGE_SIZE = 20;
 const TOTAL_PAGES = Math.ceil(GEN_1_COUNT / PAGE_SIZE);
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default class PokemonList extends Component {
   @service pokeData;
 
   @tracked searchTerm = '';
+  @tracked debouncedSearchTerm = '';
   @tracked sortBy = 'id';
   @tracked offset = 0;
   @tracked currentPage = null;
   @tracked isChangingPage = false;
+
+  #debounceTimer;
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    clearTimeout(this.#debounceTimer);
+  }
 
   get pokemon() {
     return this.currentPage || this.args.pokemon;
   }
 
   get filteredPokemon() {
-    let results = this.pokemon;
-    if (this.searchTerm) {
+    let results = [...this.pokemon];
+    if (this.debouncedSearchTerm) {
       results = results.filter((p) =>
-        p.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
+        p.name.toLowerCase().includes(this.debouncedSearchTerm.toLowerCase()),
       );
     }
     if (this.sortBy === 'name') {
@@ -59,6 +68,10 @@ export default class PokemonList extends Component {
   @action
   updateSearch(event) {
     this.searchTerm = event.target.value;
+    clearTimeout(this.#debounceTimer);
+    this.#debounceTimer = setTimeout(() => {
+      this.debouncedSearchTerm = this.searchTerm;
+    }, SEARCH_DEBOUNCE_MS);
   }
 
   @action
