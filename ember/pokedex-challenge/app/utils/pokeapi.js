@@ -1,3 +1,5 @@
+export const GEN_1_COUNT = 151;
+
 export function idFromUrl(url) {
   return Number(url.split('/').filter(Boolean).pop());
 }

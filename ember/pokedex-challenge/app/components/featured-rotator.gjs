@@ -1,23 +1,34 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
+import { GEN_1_COUNT } from 'pokedex-challenge/utils/pokeapi';
+
+const ROTATE_INTERVAL_MS = 8000;
 
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
+
+  #intervalId;
 
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
+    this.#intervalId = setInterval(() => {
       this.loadFeatured();
-    }, 8000);
+    }, ROTATE_INTERVAL_MS);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    clearInterval(this.#intervalId);
   }
 
   async loadFeatured() {
-    const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
+    const id = Math.floor(Math.random() * GEN_1_COUNT) + 1;
+    const data = await this.pokeData.fetchPokemon(id);
     this.featured = {
       id: data.id,
       name: data.name,

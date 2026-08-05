@@ -4,8 +4,7 @@ import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 import { LinkTo } from '@ember/routing';
 import { flattenEvolutionChain } from 'pokedex-challenge/utils/evolution-chain';
-
-const GEN_1_MAX_ID = 151;
+import { GEN_1_COUNT } from 'pokedex-challenge/utils/pokeapi';
 
 export default class EvolutionChain extends Component {
   @service pokeData;
@@ -36,7 +35,7 @@ export default class EvolutionChain extends Component {
       level.map((stage) => ({
         ...stage,
         isCurrent: stage.id === this.args.currentId,
-        isOutOfRange: stage.id > GEN_1_MAX_ID,
+        isOutOfRange: stage.id > GEN_1_COUNT,
       })),
     );
   }

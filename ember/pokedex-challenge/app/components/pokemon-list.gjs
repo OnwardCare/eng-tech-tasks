@@ -5,9 +5,12 @@ import { service } from '@ember/service';
 import { on } from '@ember/modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
-import { idFromUrl, toPokemonSummary } from 'pokedex-challenge/utils/pokeapi';
+import {
+  GEN_1_COUNT,
+  idFromUrl,
+  toPokemonSummary,
+} from 'pokedex-challenge/utils/pokeapi';
 
-const GEN_1_COUNT = 151;
 const PAGE_SIZE = 20;
 const TOTAL_PAGES = Math.ceil(GEN_1_COUNT / PAGE_SIZE);
 
