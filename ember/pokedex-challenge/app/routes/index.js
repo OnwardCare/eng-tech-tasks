@@ -1,22 +1,17 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
+import { idFromUrl, toPokemonSummary } from 'pokedex-challenge/utils/pokeapi';
 
 export default class IndexRoute extends Route {
   @service pokeData;
 
   async model() {
     const list = await this.pokeData.fetchList(0, 20);
-    const pokemon = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      pokemon.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    return pokemon;
+    const details = await Promise.all(
+      list.results.map((entry) =>
+        this.pokeData.fetchPokemon(idFromUrl(entry.url)),
+      ),
+    );
+    return details.map(toPokemonSummary);
   }
 }
