@@ -8,6 +8,8 @@ import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 import { idFromUrl, toPokemonSummary } from 'pokedex-challenge/utils/pokeapi';
 
 const GEN_1_COUNT = 151;
+const PAGE_SIZE = 20;
+const TOTAL_PAGES = Math.ceil(GEN_1_COUNT / PAGE_SIZE);
 
 export default class PokemonList extends Component {
   @service pokeData;
@@ -16,6 +18,7 @@ export default class PokemonList extends Component {
   @tracked sortBy = 'id';
   @tracked offset = 0;
   @tracked currentPage = null;
+  @tracked isChangingPage = false;
 
   get pokemon() {
     return this.currentPage || this.args.pokemon;
@@ -34,6 +37,22 @@ export default class PokemonList extends Component {
     return results.sort((a, b) => a.id - b.id);
   }
 
+  get pageNumber() {
+    return this.offset / PAGE_SIZE + 1;
+  }
+
+  get totalPages() {
+    return TOTAL_PAGES;
+  }
+
+  get isPreviousDisabled() {
+    return this.offset === 0 || this.isChangingPage;
+  }
+
+  get isNextDisabled() {
+    return this.offset + PAGE_SIZE >= GEN_1_COUNT || this.isChangingPage;
+  }
+
   @action
   updateSearch(event) {
     this.searchTerm = event.target.value;
@@ -45,24 +64,41 @@ export default class PokemonList extends Component {
   }
 
   @action
-  async nextPage() {
-    if (this.offset + 20 >= GEN_1_COUNT) {
+  nextPage() {
+    if (this.isNextDisabled) {
       return;
     }
-    this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const details = await Promise.all(
-      list.results.map((entry) =>
-        this.pokeData.fetchPokemon(idFromUrl(entry.url)),
-      ),
-    );
-    this.currentPage = details.map(toPokemonSummary);
+    this.loadPage(this.offset + PAGE_SIZE);
   }
 
   @action
   previousPage() {
-    console.log('previousPage');
+    if (this.isPreviousDisabled) {
+      return;
+    }
+    this.loadPage(this.offset - PAGE_SIZE);
+  }
+
+  async loadPage(offset) {
+    this.isChangingPage = true;
+    try {
+      if (offset === 0) {
+        this.offset = 0;
+        this.currentPage = null;
+        return;
+      }
+      const limit = Math.min(PAGE_SIZE, GEN_1_COUNT - offset);
+      const list = await this.pokeData.fetchList(offset, limit);
+      const details = await Promise.all(
+        list.results.map((entry) =>
+          this.pokeData.fetchPokemon(idFromUrl(entry.url)),
+        ),
+      );
+      this.offset = offset;
+      this.currentPage = details.map(toPokemonSummary);
+    } finally {
+      this.isChangingPage = false;
+    }
   }
 
   <template>
@@ -92,11 +128,21 @@ export default class PokemonList extends Component {
       <button
         type="button"
         class="page-button"
+        disabled={{this.isPreviousDisabled}}
         {{on "click" this.previousPage}}
       >
         Previous
       </button>
-      <button type="button" class="page-button" {{on "click" this.nextPage}}>
+      <span class="page-indicator">Page
+        {{this.pageNumber}}
+        of
+        {{this.totalPages}}</span>
+      <button
+        type="button"
+        class="page-button"
+        disabled={{this.isNextDisabled}}
+        {{on "click" this.nextPage}}
+      >
         Next
       </button>
     </div>
