@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -6,6 +5,7 @@ import { service } from '@ember/service';
 import { on } from '@ember/modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
+import { idFromUrl, toPokemonSummary } from 'pokedex-challenge/utils/pokeapi';
 
 const GEN_1_COUNT = 151;
 
@@ -52,18 +52,12 @@ export default class PokemonList extends Component {
     this.offset = this.offset + 20;
     const limit = Math.min(20, GEN_1_COUNT - this.offset);
     const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
+    const details = await Promise.all(
+      list.results.map((entry) =>
+        this.pokeData.fetchPokemon(idFromUrl(entry.url)),
+      ),
+    );
+    this.currentPage = details.map(toPokemonSummary);
   }
 
   @action

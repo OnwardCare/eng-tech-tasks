@@ -1,6 +1,4 @@
-export function idFromSpeciesUrl(url) {
-  return Number(url.split('/').filter(Boolean).pop());
-}
+import { idFromUrl } from 'pokedex-challenge/utils/pokeapi';
 
 export function flattenEvolutionChain(chain) {
   const levels = [];
@@ -9,7 +7,7 @@ export function flattenEvolutionChain(chain) {
   while (currentLevel.length > 0) {
     levels.push(
       currentLevel.map((node) => ({
-        id: idFromSpeciesUrl(node.species.url),
+        id: idFromUrl(node.species.url),
         name: node.species.name,
       })),
     );

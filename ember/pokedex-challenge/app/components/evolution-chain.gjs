@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 import { LinkTo } from '@ember/routing';
 import { flattenEvolutionChain } from 'pokedex-challenge/utils/evolution-chain';
@@ -7,6 +8,8 @@ import { flattenEvolutionChain } from 'pokedex-challenge/utils/evolution-chain';
 const GEN_1_MAX_ID = 151;
 
 export default class EvolutionChain extends Component {
+  @service pokeData;
+
   @tracked levels = null;
   @tracked hasError = false;
 
@@ -18,8 +21,7 @@ export default class EvolutionChain extends Component {
 
   async fetchChain(url) {
     try {
-      const response = await fetch(url);
-      const { chain } = await response.json();
+      const { chain } = await this.pokeData.fetchEvolutionChain(url);
       if (url !== this.args.evolutionChainUrl) return;
       this.levels = flattenEvolutionChain(chain);
     } catch {
