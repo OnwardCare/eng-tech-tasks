@@ -18,8 +18,17 @@ export default class FavoritesService extends Service {
     if (this.isFavorite(pokemon.id)) {
       return;
     }
-    this.items = [...this.items, pokemon];
+    this.items = [...this.items, this.normalize(pokemon)];
     this.persist();
+  }
+
+  normalize(pokemon) {
+    return {
+      id: pokemon.id,
+      name: pokemon.name,
+      sprite: pokemon.sprite ?? pokemon.artwork,
+      types: pokemon.types,
+    };
   }
 
   remove(id) {
