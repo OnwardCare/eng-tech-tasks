@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -7,22 +6,14 @@ import { on } from '@ember/modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
 
-const GEN_1_COUNT = 151;
-
 export default class PokemonList extends Component {
-  @service pokeData;
+  @service router;
 
   @tracked searchTerm = '';
   @tracked sortBy = 'id';
-  @tracked offset = 0;
-  @tracked currentPage = null;
-
-  get pokemon() {
-    return this.currentPage || this.args.pokemon;
-  }
 
   get filteredPokemon() {
-    let results = this.pokemon;
+    let results = this.args.pokemon ?? [];
     if (this.searchTerm) {
       results = results.filter((p) =>
         p.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
@@ -45,30 +36,19 @@ export default class PokemonList extends Component {
   }
 
   @action
-  async nextPage() {
-    if (this.offset + 20 >= GEN_1_COUNT) {
+  nextPage() {
+    if (!this.args.hasNext) {
       return;
     }
-    this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
+    this.router.transitionTo({ queryParams: { page: this.args.page + 1 } });
   }
 
   @action
   previousPage() {
-    console.log('previousPage');
+    if (!this.args.hasPrevious) {
+      return;
+    }
+    this.router.transitionTo({ queryParams: { page: this.args.page - 1 } });
   }
 
   <template>
@@ -98,11 +78,17 @@ export default class PokemonList extends Component {
       <button
         type="button"
         class="page-button"
+        disabled={{unless @hasPrevious "disabled"}}
         {{on "click" this.previousPage}}
       >
         Previous
       </button>
-      <button type="button" class="page-button" {{on "click" this.nextPage}}>
+      <button
+        type="button"
+        class="page-button"
+        disabled={{unless @hasNext "disabled"}}
+        {{on "click" this.nextPage}}
+      >
         Next
       </button>
     </div>

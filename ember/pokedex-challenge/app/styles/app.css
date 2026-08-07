@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -258,6 +258,49 @@ a {
   text-align: center;
 }
 
+.evolution-chain {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.evolution-stage {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.evolution-stage-link {
+  text-transform: capitalize;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.evolution-stage-link:hover {
+  text-decoration: underline;
+}
+
+.evolution-arrow {
+  color: #999;
+}
+
 .empty-state {
   color: #777;
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #555;
+}
+
+.sprite-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eceef1;
+  border-radius: 6px;
+  color: #aaa;
+  font-size: 1.5rem;
 }
