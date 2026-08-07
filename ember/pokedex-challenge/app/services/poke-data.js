@@ -22,7 +22,10 @@ function shapeDetail(detail) {
     name: detail.name,
     height: detail.height,
     weight: detail.weight,
-    artwork: detail.sprites.other['official-artwork'].front_default,
+    artwork:
+      detail.sprites.other?.['official-artwork']?.front_default ??
+      detail.sprites.front_default ??
+      null,
     types: detail.types.map((t) => t.type.name),
     abilities: detail.abilities.map((a) => a.ability.name),
     stats: detail.stats.map((s) => ({

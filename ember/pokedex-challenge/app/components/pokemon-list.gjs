@@ -13,7 +13,7 @@ export default class PokemonList extends Component {
   @tracked sortBy = 'id';
 
   get filteredPokemon() {
-    let results = this.args.pokemon;
+    let results = this.args.pokemon ?? [];
     if (this.searchTerm) {
       results = results.filter((p) =>
         p.name.toLowerCase().includes(this.searchTerm.toLowerCase()),

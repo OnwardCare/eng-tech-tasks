@@ -288,3 +288,19 @@ a {
 .empty-state {
   color: #777;
 }
+
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #555;
+}
+
+.sprite-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eceef1;
+  border-radius: 6px;
+  color: #aaa;
+  font-size: 1.5rem;
+}
