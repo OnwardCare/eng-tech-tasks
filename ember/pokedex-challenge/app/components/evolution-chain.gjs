@@ -11,16 +11,34 @@ function idFromUrl(url) {
 
 export default class EvolutionChain extends Component {
   @tracked stages = [];
+  loadedPokemonId = null;
 
   constructor() {
     super(...arguments);
     this.loadChain();
   }
 
+  // Reading this from the template makes the getter re-run whenever
+  // @pokemonId changes, even when the `pokemon` route reuses this same
+  // component instance across dynamic-segment-only transitions (e.g.
+  // clicking one evolution stage to another) where the constructor won't
+  // fire again on its own.
+  get pokemonId() {
+    const id = this.args.pokemonId;
+    if (this.loadedPokemonId !== id) {
+      queueMicrotask(() => this.loadChain());
+    }
+    return id;
+  }
+
   async loadChain() {
-    const speciesResponse = await fetch(
-      `${BASE_URL}/pokemon-species/${this.args.pokemonId}`,
-    );
+    const id = this.args.pokemonId;
+    if (this.loadedPokemonId === id) {
+      return;
+    }
+    this.loadedPokemonId = id;
+
+    const speciesResponse = await fetch(`${BASE_URL}/pokemon-species/${id}`);
     const species = await speciesResponse.json();
     const chainResponse = await fetch(species.evolution_chain.url);
     const { chain } = await chainResponse.json();
@@ -44,7 +62,7 @@ export default class EvolutionChain extends Component {
   }
 
   <template>
-    <div class="evolution-chain">
+    <div class="evolution-chain" data-pokemon-id={{this.pokemonId}}>
       {{#if this.stages.length}}
         {{#each this.stages as |stage|}}
           <div class="evolution-stage">

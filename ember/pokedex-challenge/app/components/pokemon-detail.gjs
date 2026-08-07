@@ -7,18 +7,35 @@ import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
+  loadedPokemonId = null;
 
   constructor() {
     super(...arguments);
     this.loadPokemon();
   }
 
+  // Reading this from the template makes the getter re-run whenever
+  // @pokemonId changes, even when the `pokemon` route reuses this same
+  // component instance across dynamic-segment-only transitions (e.g.
+  // clicking one evolution stage to another) where the constructor won't
+  // fire again on its own.
+  get pokemonId() {
+    const id = this.args.pokemonId;
+    if (this.loadedPokemonId !== id) {
+      queueMicrotask(() => this.loadPokemon());
+    }
+    return id;
+  }
+
   async loadPokemon() {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
-    );
+    const id = this.args.pokemonId;
+    if (this.loadedPokemonId === id) {
+      return;
+    }
+    this.loadedPokemonId = id;
+
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     const data = await response.json();
-    console.log('loaded pokemon', data.name);
     this.pokemon = {
       id: data.id,
       name: data.name,
@@ -43,7 +60,7 @@ export default class PokemonDetail extends Component {
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" data-pokemon-id={{this.pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
@@ -64,7 +81,9 @@ export default class PokemonDetail extends Component {
             </div>
             <p class="flavor-text">{{this.flavorText}}</p>
             <p class="detail-measurements">
-              Height: {{this.pokemon.height}} &middot; Weight:
+              Height:
+              {{this.pokemon.height}}
+              &middot; Weight:
               {{this.pokemon.weight}}
             </p>
           </div>
