@@ -22,6 +22,7 @@ Node 20.19+ required.
 **Component format:** All components use Ember's `<template>` tag syntax (`.gjs` files — "Glimmer JS"). There are no separate `.hbs` files. Templates are co-located with JS class bodies.
 
 **Routing:** Three routes defined in `app/router.js`:
+
 - `index` → `/` — paginated Gen-1 grid
 - `pokemon` → `/pokemon/:pokemon_id` — detail page
 - `favorites` → `/favorites` — starred Pokémon (no `app/routes/favorites.js`; the template reads the `favorites` service directly instead of via `@model`)
@@ -29,11 +30,12 @@ Node 20.19+ required.
 Routes live in `app/routes/`. Route `model()` hooks return plain objects/arrays, not Ember Data models. Templates live in `app/templates/` and receive `@model` from the route, except `favorites.gjs` which injects the service itself for live reactivity.
 
 **Services:**
+
 - `poke-data` (`app/services/poke-data.js`) — thin wrapper around PokéAPI (`https://pokeapi.co/api/v2`). No auth required.
 - `favorites` (`app/services/favorites.js`) — owns the favorites list. `@tracked`, persisted to `localStorage`.
 - `store` (`app/services/store.js`) — WarpDrive store stub (not actively used for data fetching yet).
 
-**Data fetching pattern:** Mixed. `app/routes/index.js` fetches via `pokeData` service. `PokemonDetail` and `FeaturedRotator` components fetch directly inside their constructors/methods using `fetch()`. The PokéAPI data is not cached between navigations.
+**Data fetching pattern:** Mostly route-driven through the `pokeData` service. `app/routes/index.js` calls `pokeData.fetchPage()` and `app/routes/pokemon.js` calls `pokeData.fetchPokemonDetail()`, both passing the result down as `@model`. `FeaturedRotator` is the exception — it fetches directly inside the component via `pokeData.fetchPokemon()` on an interval, since it isn't backed by a route. All requests go through `PokeDataService#fetchJSON`, which caches responses in an in-memory `Map` keyed by URL, so repeat requests for the same resource within a session are served from cache.
 
 ## Tests
 
