@@ -1,28 +1,41 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
+import { GEN_1_COUNT } from 'pokedex-challenge/services/poke-data';
+
+const ROTATE_INTERVAL = 8000;
 
 export default class FeaturedRotator extends Component {
+  @service pokeData;
+
   @tracked featured = null;
+
+  #timer = null;
 
   constructor() {
     super(...arguments);
     this.loadFeatured();
-    setInterval(() => {
-      this.loadFeatured();
-    }, 8000);
+    this.#timer = setInterval(() => this.loadFeatured(), ROTATE_INTERVAL);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    clearInterval(this.#timer);
   }
 
   async loadFeatured() {
-    const id = Math.floor(Math.random() * 151) + 1;
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await response.json();
-    this.featured = {
-      id: data.id,
-      name: data.name,
-      sprite: data.sprites.other['official-artwork'].front_default,
-    };
+    const id = Math.floor(Math.random() * GEN_1_COUNT) + 1;
+
+    try {
+      const pokemon = await this.pokeData.fetchPokemon(id);
+
+      if (!this.isDestroyed) {
+        this.featured = pokemon;
+      }
+    } catch {
+      // A failed rotation is not worth surfacing; the next tick retries.
+    }
   }
 
   <template>
@@ -35,7 +48,7 @@ export default class FeaturedRotator extends Component {
           class="featured-link"
         >
           <img
-            src={{this.featured.sprite}}
+            src={{this.featured.artwork}}
             alt={{this.featured.name}}
             class="featured-sprite"
           />
