@@ -6,7 +6,11 @@ import TypeBadge from 'pokedex-challenge/components/type-badge';
   <div class="pokemon-card">
     <FavoriteButton @pokemon={{@pokemon}} />
     <LinkTo @route="pokemon" @model={{@pokemon.id}} class="pokemon-link">
-      <img src={{@pokemon.sprite}} alt={{@pokemon.name}} class="pokemon-sprite" />
+      <img
+        src={{@pokemon.sprite}}
+        alt={{@pokemon.name}}
+        class="pokemon-sprite"
+      />
       <h3 class="pokemon-name">{{@pokemon.name}}</h3>
     </LinkTo>
     <span class="pokemon-id">#{{@pokemon.id}}</span>

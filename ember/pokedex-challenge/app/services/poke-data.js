@@ -20,6 +20,40 @@ function normalizePokemon(data) {
   };
 }
 
+function normalizeSpecies(data) {
+  const entry = data.flavor_text_entries.find((e) => e.language.name === 'en');
+
+  return {
+    // Flavor text ships with hard line breaks and form feeds baked in.
+    flavorText: entry ? entry.flavor_text.replace(/\s+/g, ' ').trim() : '',
+    evolutionChainUrl: data.evolution_chain?.url ?? null,
+  };
+}
+
+function speciesId(url) {
+  const [, id] = url.match(/\/pokemon-species\/(\d+)\/?$/) ?? [];
+  return Number(id);
+}
+
+// Flattens the recursive chain into one entry per evolution stage, so a
+// branching line (Eevee, Poliwag) keeps every branch at the right depth.
+function toStages(chain) {
+  const stages = [];
+  let level = [chain];
+
+  while (level.length > 0) {
+    stages.push(
+      level.map((node) => ({
+        id: speciesId(node.species.url),
+        name: node.species.name,
+      })),
+    );
+    level = level.flatMap((node) => node.evolves_to);
+  }
+
+  return stages;
+}
+
 export default class PokeDataService extends Service {
   #requests = new Map();
 
@@ -52,6 +86,38 @@ export default class PokeDataService extends Service {
     return normalizePokemon(
       await this.request(`${BASE_URL}/pokemon/${idOrName}`),
     );
+  }
+
+  async fetchSpecies(idOrName) {
+    return normalizeSpecies(
+      await this.request(`${BASE_URL}/pokemon-species/${idOrName}`),
+    );
+  }
+
+  async fetchEvolutionChain(url) {
+    const { chain } = await this.request(url);
+    const stages = toStages(chain);
+
+    if (stages.length < 2) {
+      return [];
+    }
+
+    return Promise.all(
+      stages.map((stage) =>
+        Promise.all(stage.map((entry) => this.#withSprite(entry))),
+      ),
+    );
+  }
+
+  // A chain can reach species outside gen 1; a missing sprite must not take
+  // the whole detail page down with it.
+  async #withSprite(entry) {
+    try {
+      const { sprite } = await this.fetchPokemon(entry.id);
+      return { ...entry, sprite };
+    } catch {
+      return { ...entry, sprite: null };
+    }
   }
 
   async fetchPage(offset = 0, limit = 20) {

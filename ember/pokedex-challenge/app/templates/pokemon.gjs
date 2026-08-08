@@ -2,7 +2,11 @@ import { pageTitle } from 'ember-page-title';
 import PokemonDetail from 'pokedex-challenge/components/pokemon-detail';
 
 <template>
-  {{pageTitle "Pokémon"}}
+  {{pageTitle @model.pokemon.name}}
 
-  <PokemonDetail @pokemonId={{@model}} />
+  <PokemonDetail
+    @pokemon={{@model.pokemon}}
+    @flavorText={{@model.flavorText}}
+    @evolutions={{@model.evolutions}}
+  />
 </template>
