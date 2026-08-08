@@ -6,8 +6,7 @@ import { service } from '@ember/service';
 import { on } from '@ember/modifier';
 import FeaturedRotator from 'pokedex-challenge/components/featured-rotator';
 import PokemonCard from 'pokedex-challenge/components/pokemon-card';
-
-const GEN_1_COUNT = 151;
+import { GEN_1_COUNT } from 'pokedex-challenge/services/poke-data';
 
 export default class PokemonList extends Component {
   @service pokeData;
@@ -50,20 +49,7 @@ export default class PokemonList extends Component {
       return;
     }
     this.offset = this.offset + 20;
-    const limit = Math.min(20, GEN_1_COUNT - this.offset);
-    const list = await this.pokeData.fetchList(this.offset, limit);
-    const page = [];
-    for (const entry of list.results) {
-      const response = await fetch(entry.url);
-      const detail = await response.json();
-      page.push({
-        id: detail.id,
-        name: detail.name,
-        sprite: detail.sprites.front_default,
-        types: detail.types.map((t) => t.type.name),
-      });
-    }
-    this.currentPage = page;
+    this.currentPage = await this.pokeData.fetchPage(this.offset, 20);
   }
 
   @action
