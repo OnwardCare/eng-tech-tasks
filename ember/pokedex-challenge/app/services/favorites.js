@@ -1,7 +1,27 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+
+const STORAGE_KEY = 'pokedex:favorites';
+
+// Favorites are rendered as cards, so store exactly what a card needs rather
+// than whichever richer object the caller happened to have.
+function toEntry({ id, name, sprite, types }) {
+  return { id, name, sprite, types };
+}
+
+function load() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(stored)
+      ? stored.filter((entry) => entry && typeof entry.id === 'number')
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 export default class FavoritesService extends Service {
-  items = [];
+  @tracked items = load();
 
   get count() {
     return this.items.length;
@@ -12,14 +32,13 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    if (!this.isFavorite(pokemon.id)) {
+      this.#persist([...this.items, toEntry(pokemon)]);
+    }
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    this.#persist(this.items.filter((item) => item.id !== id));
   }
 
   toggle(pokemon) {
@@ -27,6 +46,16 @@ export default class FavoritesService extends Service {
       this.remove(pokemon.id);
     } else {
       this.add(pokemon);
+    }
+  }
+
+  #persist(items) {
+    this.items = items;
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // Storage can be unavailable or full; in-memory state still works.
     }
   }
 }
