@@ -180,6 +180,26 @@ a {
   cursor: pointer;
 }
 
+.page-button:disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+.page-status {
+  align-self: center;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .pokemon-detail {
   background: #fff;
   border: 1px solid #e3e3e8;
