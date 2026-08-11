@@ -1,15 +1,19 @@
 import { useLegacyStore } from '@warp-drive/legacy';
 import { JSONAPICache } from '@warp-drive/json-api';
+import PokemonSchema from '../data/pokemon';
+// import LocalStorageHandler from './local-storage-handler';
 
 const Store = useLegacyStore({
   linksMode: false,
   cache: JSONAPICache,
   handlers: [
-    // -- your handlers here
+    // TODO: Investigate why this handlers is not working as expected.
+    // LocalStorageHandler
   ],
   schemas: [
-    // -- your schemas here
+    PokemonSchema
   ],
+  legacyRequests: true,
 });
 
 export default Store;
