@@ -7,6 +7,7 @@ import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
 export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
+  @tracked evolutionChainUrl = '';
 
   constructor() {
     super(...arguments);
@@ -40,6 +41,7 @@ export default class PokemonDetail extends Component {
       (e) => e.language.name === 'en',
     );
     this.flavorText = entry ? entry.flavor_text : '';
+    this.evolutionChainUrl = species.evolution_chain.url;
   }
 
   <template>

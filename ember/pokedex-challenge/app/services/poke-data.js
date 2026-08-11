@@ -14,4 +14,25 @@ export default class PokeDataService extends Service {
     const response = await fetch(`${BASE_URL}/pokemon/${idOrName}`);
     return response.json();
   }
+
+  async fetchEvolutionChain(pokemonId) {
+    const response = await fetch(`${BASE_URL}/evolution-chain/${pokemonId}/`);
+    const chainData = await response.json();
+
+    return this.getEvolutionString(chainData.chain);
+  }
+
+  getEvolutionString(chain) {
+    const name = chain.species?.name;
+    
+    if (!name) {
+      return '';
+    }
+
+    if (!chain.evolves_to || chain.evolves_to.length === 0) {
+      return name;
+    }
+  
+    return `${name} -> ${this.getEvolutionString(chain.evolves_to[0])}`;
+  }
 }

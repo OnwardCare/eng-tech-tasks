@@ -11,6 +11,13 @@ const GEN_1_COUNT = 151;
 
 export default class PokemonList extends Component {
   @service pokeData;
+  @service favorites;
+
+  constructor() {
+    super(...arguments);
+
+    this.favorites.load();
+  }
 
   @tracked searchTerm = '';
   @tracked sortBy = 'id';
