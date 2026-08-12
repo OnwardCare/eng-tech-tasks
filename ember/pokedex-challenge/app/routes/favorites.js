@@ -5,6 +5,6 @@ export default class FavoritesRoute extends Route {
   @service favorites;
 
   model() {
-    return this.favorites.items;
+    return this.favorites;
   }
 }

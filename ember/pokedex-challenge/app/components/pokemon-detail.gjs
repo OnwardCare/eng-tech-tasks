@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 import FavoriteButton from 'pokedex-challenge/components/favorite-button';
 import TypeBadge from 'pokedex-challenge/components/type-badge';
 import EvolutionChain from 'pokedex-challenge/components/evolution-chain';
@@ -8,14 +9,16 @@ export default class PokemonDetail extends Component {
   @tracked pokemon = null;
   @tracked flavorText = '';
 
-  constructor() {
-    super(...arguments);
-    this.loadPokemon();
-  }
+  watchPokemonId = modifier((element, [pokemonId]) => {
+    this.loadPokemon(pokemonId);
+  });
 
-  async loadPokemon() {
+  async loadPokemon(pokemonId) {
+    this.pokemon = null;
+    this.flavorText = '';
+
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${this.args.pokemonId}`,
+      `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
     );
     const data = await response.json();
     console.log('loaded pokemon', data.name);
@@ -43,7 +46,7 @@ export default class PokemonDetail extends Component {
   }
 
   <template>
-    <div class="pokemon-detail">
+    <div class="pokemon-detail" {{this.watchPokemonId @pokemonId}}>
       {{#if this.pokemon}}
         <div class="detail-header">
           <img
