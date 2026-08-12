@@ -35,7 +35,9 @@ module('Unit | Service | favorites', function (hooks) {
     const favorites = this.owner.lookup('service:favorites');
 
     await render(
-      <template><span id="count">{{favorites.count}}</span></template>,
+      <template>
+        <span id="count">{{favorites.count}}</span>
+      </template>,
     );
     assert.dom('#count').hasText('0');
 
@@ -60,10 +62,7 @@ module('Unit | Service | favorites', function (hooks) {
     favorites.add(PIKACHU);
 
     assert.ok(favorites.isFavorite(25), 'is a favorite after add()');
-    assert.notOk(
-      favorites.isFavorite(6),
-      'other ids remain unaffected',
-    );
+    assert.notOk(favorites.isFavorite(6), 'other ids remain unaffected');
   });
 
   test('add() normalizes the pokemon before storing it', function (assert) {

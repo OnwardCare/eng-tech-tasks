@@ -1,6 +1,6 @@
 import Service from '@ember/service';
 
-const BASE_URL = "https://pokeapi.co/api/v2";
+const BASE_URL = 'https://pokeapi.co/api/v2';
 
 export default class PokeDataService extends Service {
   async fetchList(offset = 0, limit = 20) {

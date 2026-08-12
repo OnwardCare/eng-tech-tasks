@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -73,7 +72,7 @@ export default class PokemonList extends Component {
     );
   }
 
-  //NOTE: Pagination is always good... 
+  //NOTE: Pagination is always good...
   // but I noticed that sorting by name wasn't working correctly
   // In this case, loading all 151 Pokémon isn't too heavy, and the sort will work from A to Z
   // however, we are using pagination (1–20) to load the full information (evolutions, stats, etc.)
@@ -85,9 +84,7 @@ export default class PokemonList extends Component {
 
     if (sortBy === 'name') {
       const allNames = await this.ensureAllNamesLoaded();
-      const sorted = [...allNames].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
+      const sorted = [...allNames].sort((a, b) => a.name.localeCompare(b.name));
       entries = sorted.slice(newOffset, newOffset + limit);
     } else {
       const list = await this.pokeData.fetchList(newOffset, limit);
@@ -189,11 +186,13 @@ export default class PokemonList extends Component {
       <input
         type="text"
         placeholder="Search by name"
+        aria-label="Search by name"
         value={{this.searchTerm}}
         class="search-input"
         {{on "input" this.updateSearch}}
       />
       <select
+        aria-label="Sort pokemon"
         class="sort-select"
         value={{this.sortBy}}
         {{on "change" this.updateSort}}

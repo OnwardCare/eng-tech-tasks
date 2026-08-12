@@ -10,7 +10,7 @@ const ARTWORK_BASE_URL =
 const EvolutionNode = <template>
   <div class="evolution-node">
     {{#if @stage.isCurrent}}
-      <div class="evolution-stage evolution-stage--current" aria-current="page">
+      <div class="evolution-stage evolution-stage-current" aria-current="page">
         <img
           src={{@stage.artwork}}
           alt={{@stage.name}}

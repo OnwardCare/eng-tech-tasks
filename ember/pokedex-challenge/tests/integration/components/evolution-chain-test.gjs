@@ -17,13 +17,22 @@ const BULBASAUR_SPECIES = {
 
 const BULBASAUR_CHAIN = {
   chain: {
-    species: { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon-species/1/' },
+    species: {
+      name: 'bulbasaur',
+      url: 'https://pokeapi.co/api/v2/pokemon-species/1/',
+    },
     evolves_to: [
       {
-        species: { name: 'ivysaur', url: 'https://pokeapi.co/api/v2/pokemon-species/2/' },
+        species: {
+          name: 'ivysaur',
+          url: 'https://pokeapi.co/api/v2/pokemon-species/2/',
+        },
         evolves_to: [
           {
-            species: { name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon-species/3/' },
+            species: {
+              name: 'venusaur',
+              url: 'https://pokeapi.co/api/v2/pokemon-species/3/',
+            },
             evolves_to: [],
           },
         ],
@@ -41,18 +50,30 @@ const EEVEE_SPECIES = {
 
 const EEVEE_CHAIN = {
   chain: {
-    species: { name: 'eevee', url: 'https://pokeapi.co/api/v2/pokemon-species/133/' },
+    species: {
+      name: 'eevee',
+      url: 'https://pokeapi.co/api/v2/pokemon-species/133/',
+    },
     evolves_to: [
       {
-        species: { name: 'vaporeon', url: 'https://pokeapi.co/api/v2/pokemon-species/134/' },
+        species: {
+          name: 'vaporeon',
+          url: 'https://pokeapi.co/api/v2/pokemon-species/134/',
+        },
         evolves_to: [],
       },
       {
-        species: { name: 'jolteon', url: 'https://pokeapi.co/api/v2/pokemon-species/135/' },
+        species: {
+          name: 'jolteon',
+          url: 'https://pokeapi.co/api/v2/pokemon-species/135/',
+        },
         evolves_to: [],
       },
       {
-        species: { name: 'flareon', url: 'https://pokeapi.co/api/v2/pokemon-species/136/' },
+        species: {
+          name: 'flareon',
+          url: 'https://pokeapi.co/api/v2/pokemon-species/136/',
+        },
         evolves_to: [],
       },
     ],
@@ -158,7 +179,7 @@ module('Integration | Component | evolution-chain', function (hooks) {
     // pokemonId=1 -> bulbasaur
     await render(<template><EvolutionChain @pokemonId={{1}} /></template>);
 
-    const current = find('.evolution-stage--current');
+    const current = find('.evolution-stage-current');
     assert.ok(current, 'renders an element marked as the current stage');
     assert.strictEqual(
       current.tagName,
@@ -168,10 +189,7 @@ module('Integration | Component | evolution-chain', function (hooks) {
     assert.dom(current).hasAttribute('aria-current', 'page');
     assert
       .dom(current)
-      .hasText(
-        /bulbasaur/,
-        'the current stage shows the right pokemon name',
-      );
+      .hasText(/bulbasaur/, 'the current stage shows the right pokemon name');
 
     // 2 links (ivysaur y venusaur), no 3
     const links = findAll('.evolution-chain a.evolution-stage');
@@ -224,7 +242,9 @@ module('Integration | Component | evolution-chain', function (hooks) {
     this.state = state;
 
     await render(
-      <template><EvolutionChain @pokemonId={{this.state.pokemonId}} /></template>,
+      <template>
+        <EvolutionChain @pokemonId={{this.state.pokemonId}} />
+      </template>,
     );
 
     assert
