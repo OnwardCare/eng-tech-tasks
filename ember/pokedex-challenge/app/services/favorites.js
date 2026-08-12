@@ -1,7 +1,15 @@
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+
+const STORAGE_KEY = 'pokedex-challenge:favorites';
 
 export default class FavoritesService extends Service {
-  items = [];
+  @tracked items = [];
+
+  constructor() {
+    super(...arguments);
+    this.items = this.loadFromStorage();
+  }
 
   get count() {
     return this.items.length;
@@ -12,14 +20,14 @@ export default class FavoritesService extends Service {
   }
 
   add(pokemon) {
-    this.items.push(pokemon);
+    const normalized = this.normalize(pokemon);
+    this.items = [...this.items, normalized];
+    this.persist();
   }
 
   remove(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-    }
+    this.items = this.items.filter((item) => item.id !== id);
+    this.persist();
   }
 
   toggle(pokemon) {
@@ -27,6 +35,35 @@ export default class FavoritesService extends Service {
       this.remove(pokemon.id);
     } else {
       this.add(pokemon);
+    }
+  }
+
+  // NOTE: The /favorites page didn't always load the images
+  // this will ensure the image is correctly loaded into localStorage
+  normalize(pokemon) {
+    return {
+      id: pokemon.id,
+      name: pokemon.name,
+      sprite: pokemon.sprite ?? pokemon.artwork ?? null,
+      types: pokemon.types ?? [],
+    };
+  }
+
+  loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error('Failed to load favorites from localStorage', e);
+      return [];
+    }
+  }
+
+  persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items));
+    } catch (e) {
+      console.error('Failed to persist favorites to localStorage', e);
     }
   }
 }

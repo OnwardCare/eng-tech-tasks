@@ -39,14 +39,14 @@ everything done halfway. Commit as you go so we can follow your thinking.
    `pokemon-species/{id}`, follow its `evolution_chain.url`, walk the recursive
    `chain` structure, and render the evolution line in order (e.g. Bulbasaur →
    Ivysaur → Venusaur), with each stage linking to its own detail page.
-   *Done when:* every detail page shows its full evolution line in the right
+   _Done when:_ every detail page shows its full evolution line in the right
    order, and clicking a stage navigates to that Pokémon.
 
 2. **Persist favorites across reloads.** Favorites currently live only in
    memory. Persist them with `localStorage` and make the favorites experience
    fully reactive: the nav count and star states update immediately everywhere,
    survive a refresh, and `/favorites` reflects the persisted set.
-   *Done when:* you can star a Pokémon, reload the browser, and the star, the
+   _Done when:_ you can star a Pokémon, reload the browser, and the star, the
    nav count, and the `/favorites` route all still agree.
 
 ## Beyond the tasks

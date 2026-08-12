@@ -7,7 +7,7 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     sans-serif;
   background: #f4f4f6;
@@ -115,6 +115,19 @@ a {
   text-align: center;
 }
 
+.favorite-button {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #bbb;
+  line-height: 1;
+}
+
+.favorite-button.is-favorite {
+  color: #f5b942;
+}
+
 .pokemon-card .favorite-button {
   position: absolute;
   top: 0.5rem;
@@ -149,19 +162,6 @@ a {
 .type-badge {
   font-size: 0.8rem;
   text-transform: capitalize;
-}
-
-.favorite-button {
-  border: none;
-  background: transparent;
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: #bbb;
-  line-height: 1;
-}
-
-.favorite-button.is-favorite {
-  color: #f5b942;
 }
 
 .pagination {
@@ -260,4 +260,61 @@ a {
 
 .empty-state {
   color: #777;
+}
+
+.evolution-node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.evolution-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.evolution-branch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.evolution-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  gap: 0.25rem;
+}
+
+.evolution-stage-artwork {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.evolution-stage-name {
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
+
+.evolution-stage-current {
+  border: 2px solid var(--accent-color, #3b82f6);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: default;
+}
+
+.evolution-stage-badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--accent-color, #3b82f6);
+  font-weight: 600;
+}
+
+.evolution-arrow {
+  font-size: 1.5rem;
+  color: #999;
 }

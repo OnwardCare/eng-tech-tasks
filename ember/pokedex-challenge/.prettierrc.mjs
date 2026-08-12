@@ -1,4 +1,5 @@
 export default {
+  endOfLine: 'auto',
   plugins: ['prettier-plugin-ember-template-tag'],
   overrides: [
     {
